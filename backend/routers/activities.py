@@ -115,7 +115,13 @@ async def suggest_alternative(req: SuggestRequest) -> SuggestResponse:
     try:
         result = await generate_json(prompt)
     except Exception as e:
-        logger.error("Gemini suggestion failed: %s", str(e))
+        err_str = str(e)
+        logger.error("Gemini suggestion failed: %s", err_str)
+        if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+            raise HTTPException(
+                status_code=503,
+                detail="Gemini API quota reached. Please wait a minute and try again."
+            ) from e
         raise HTTPException(status_code=502, detail="AI suggestion unavailable. Please try again.") from e
 
     return SuggestResponse(

@@ -29,7 +29,7 @@ class Profile(BaseModel):
 
 
 class InsightsRequest(BaseModel):
-    activity_summary: ActivitySummary
+    activity_summary: dict[str, Any]   # flexible: accepts flat {activity_type: co2e_kg} or structured
     profile: Profile
     rag_chunks: list[str] = Field(default_factory=list)
 
@@ -53,7 +53,7 @@ async def generate_insights(req: InsightsRequest) -> InsightsResponse:
     transport = sanitize(req.profile.primary_transport, max_len=50)
 
     import json
-    activity_summary_json = json.dumps(req.activity_summary.model_dump(), indent=2)
+    activity_summary_json = json.dumps(req.activity_summary, indent=2)
     rag_context = "\n\n".join(req.rag_chunks) if req.rag_chunks else "No specific context available."
 
     prompt = insights_prompt(activity_summary_json, rag_context, country, diet, transport)
@@ -61,7 +61,13 @@ async def generate_insights(req: InsightsRequest) -> InsightsResponse:
     try:
         result = await generate_json(prompt)
     except Exception as e:
-        logger.error("Gemini insights failed: %s", str(e))
+        err_str = str(e)
+        logger.error("Gemini insights failed: %s", err_str)
+        if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+            raise HTTPException(
+                status_code=503,
+                detail="Gemini API quota reached. Please wait a minute and try again."
+            ) from e
         raise HTTPException(status_code=502, detail="AI insights unavailable. Please try again.") from e
 
     return InsightsResponse(
