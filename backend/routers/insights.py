@@ -70,9 +70,17 @@ async def generate_insights(req: InsightsRequest) -> InsightsResponse:
             ) from e
         raise HTTPException(status_code=502, detail="AI insights unavailable. Please try again.") from e
 
+    raw_sources = result.get("sources", [])
+    sources_list = []
+    for src in raw_sources:
+        if isinstance(src, dict):
+            sources_list.append({"doc": str(src.get("doc", "Source")), "excerpt": str(src.get("excerpt", ""))})
+        elif isinstance(src, str):
+            sources_list.append({"doc": "Source", "excerpt": src})
+
     return InsightsResponse(
         summary=result.get("summary", ""),
         suggestions=result.get("suggestions", [])[:3],
         fact=result.get("fact", ""),
-        sources=result.get("sources", []),
+        sources=sources_list,
     )

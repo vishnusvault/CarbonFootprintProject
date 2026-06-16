@@ -21,7 +21,7 @@ _client = genai.Client(api_key=GOOGLE_API_KEY)
 # Generation config: ask for JSON output, low temperature for factual consistency
 _GEN_CONFIG = types.GenerateContentConfig(
     temperature=0.3,
-    max_output_tokens=1024,
+    max_output_tokens=4096,
     response_mime_type="application/json",
 )
 
