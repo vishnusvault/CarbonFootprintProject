@@ -1,6 +1,6 @@
 """
 CarbonLens — Gemini LLM Service
-Uses google-generativeai SDK. API key loaded from environment via config.py.
+Uses google-genai SDK (new official SDK). API key loaded from environment via config.py.
 No secrets are hardcoded here.
 """
 import json
@@ -8,19 +8,19 @@ import re
 import logging
 from typing import Any
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from config import GOOGLE_API_KEY, GEMINI_LLM_MODEL
 
 logger = logging.getLogger(__name__)
 
-# Configure Gemini once at module import — key comes from env via config.py
-genai.configure(api_key=GOOGLE_API_KEY)
-_model = genai.GenerativeModel(GEMINI_LLM_MODEL)
+# Configure Gemini client — key comes from env via config.py
+_client = genai.Client(api_key=GOOGLE_API_KEY)
 
-# Generation config: ask for JSON output, cap tokens
-_GEN_CONFIG = genai.types.GenerationConfig(
-    temperature=0.3,          # low temperature for factual, consistent outputs
+# Generation config: ask for JSON output, low temperature for factual consistency
+_GEN_CONFIG = types.GenerateContentConfig(
+    temperature=0.3,
     max_output_tokens=1024,
     response_mime_type="application/json",
 )
@@ -48,7 +48,11 @@ async def generate_json(prompt: str) -> dict[str, Any]:
         Exception: on API or network errors (caller handles).
     """
     try:
-        response = _model.generate_content(prompt, generation_config=_GEN_CONFIG)
+        response = _client.models.generate_content(
+            model=GEMINI_LLM_MODEL,
+            contents=prompt,
+            config=_GEN_CONFIG,
+        )
         raw = response.text.strip()
 
         # Strip markdown code fences if Gemini wraps JSON in them

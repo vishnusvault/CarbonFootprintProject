@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT / "backend"))
 from dotenv import load_dotenv
 load_dotenv(ROOT / ".env")
 
-import google.generativeai as genai
+from google import genai
 import chromadb
 from chromadb import Settings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -33,11 +33,11 @@ GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
 RAG_DB_PATH = os.getenv("RAG_DB_PATH", str(ROOT / "rag" / "db"))
 DATA_DIR = ROOT / "rag" / "data"
 COLLECTION_NAME = "carbonlens_climate"
-CHUNK_SIZE = 500       # tokens ≈ chars / 4
+CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
 EMBEDDING_MODEL = "models/text-embedding-004"
 
-genai.configure(api_key=GOOGLE_API_KEY)
+_client = genai.Client(api_key=GOOGLE_API_KEY)
 
 
 # ── Embedding Function ────────────────────────────────────────────────────────
@@ -45,19 +45,27 @@ def embed_texts(texts: list[str], task_type: str = "retrieval_document") -> list
     """Batch embed texts using Google text-embedding-004."""
     embeddings = []
     for text in texts:
-        result = genai.embed_content(
+        result = _client.models.embed_content(
             model=EMBEDDING_MODEL,
-            content=text,
-            task_type=task_type,
+            contents=text,
+            config={"task_type": task_type},
         )
-        embeddings.append(result["embedding"])
+        embeddings.append(result.embeddings[0].values)
     return embeddings
 
 
 # ── ChromaDB Custom Embedding Function ───────────────────────────────────────
 class GoogleEmbeddingFunction(chromadb.EmbeddingFunction):
     def __call__(self, input: list[str]) -> list[list[float]]:
-        return embed_texts(input, task_type="retrieval_document")
+        results = []
+        for text in input:
+            result = _client.models.embed_content(
+                model=EMBEDDING_MODEL,
+                contents=text,
+                config={"task_type": "retrieval_document"},
+            )
+            results.append(result.embeddings[0].values)
+        return results
 
 
 # ── Main Ingestion ────────────────────────────────────────────────────────────

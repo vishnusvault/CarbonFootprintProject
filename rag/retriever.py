@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT / "backend"))
 
-import google.generativeai as genai
+from google import genai
 import chromadb
 from chromadb import Settings
 
@@ -19,7 +19,7 @@ from config import GOOGLE_API_KEY, RAG_DB_PATH, GEMINI_EMBEDDING_MODEL
 
 logger = logging.getLogger(__name__)
 
-genai.configure(api_key=GOOGLE_API_KEY)
+_genai_client = genai.Client(api_key=GOOGLE_API_KEY)
 
 COLLECTION_NAME = "carbonlens_climate"
 
@@ -45,12 +45,12 @@ def _get_collection():
 
 
 def _embed_query(text: str) -> list[float]:
-    result = genai.embed_content(
+    result = _genai_client.models.embed_content(
         model=GEMINI_EMBEDDING_MODEL,
-        content=text,
-        task_type="retrieval_query",   # different task type for queries vs documents
+        contents=text,
+        config={"task_type": "retrieval_query"},
     )
-    return result["embedding"]
+    return result.embeddings[0].values
 
 
 def retrieve(query: str, top_k: int = 3) -> list[dict]:
