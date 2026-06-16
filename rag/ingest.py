@@ -35,7 +35,7 @@ DATA_DIR = ROOT / "rag" / "data"
 COLLECTION_NAME = "carbonlens_climate"
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
-EMBEDDING_MODEL = "models/text-embedding-004"
+EMBEDDING_MODEL = "text-embedding-004"  # no 'models/' prefix with google-genai SDK
 
 _client = genai.Client(api_key=GOOGLE_API_KEY)
 
@@ -56,13 +56,16 @@ def embed_texts(texts: list[str], task_type: str = "retrieval_document") -> list
 
 # ── ChromaDB Custom Embedding Function ───────────────────────────────────────
 class GoogleEmbeddingFunction(chromadb.EmbeddingFunction):
+    def __init__(self) -> None:
+        pass  # required by ChromaDB EmbeddingFunction interface
+
     def __call__(self, input: list[str]) -> list[list[float]]:
         results = []
         for text in input:
             result = _client.models.embed_content(
                 model=EMBEDDING_MODEL,
                 contents=text,
-                config={"task_type": "retrieval_document"},
+                config={"task_type": "RETRIEVAL_DOCUMENT"},
             )
             results.append(result.embeddings[0].values)
         return results
