@@ -10,6 +10,7 @@ steps:
       - '-c'
       - |
         docker build \
+          --no-cache \
           --build-arg GOOGLE_API_KEY_ARG=$$_GEMINI_KEY \
           -t gcr.io/$PROJECT_ID/carbonlens:$BUILD_ID \
           -t gcr.io/$PROJECT_ID/carbonlens:latest \
