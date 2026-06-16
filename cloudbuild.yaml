@@ -1,21 +1,20 @@
 steps:
   # Step 1: Build Docker image
-  # GOOGLE_API_KEY is injected from Secret Manager via secretEnv.
-  # It is passed as a build-arg ONLY for the RAG ingest step during build.
-  # It is NOT stored in any image layer (ARG value is not persisted after the RUN that uses it).
+  # _GEMINI_KEY is fetched from Secret Manager via availableSecrets below.
+  # It is exposed as the env var _GEMINI_KEY inside this build step.
+  # Passed to Docker as a build-arg for the RAG ingest RUN step only.
+  # ARG values are NOT persisted in image layers after the RUN that consumes them.
   - name: 'gcr.io/cloud-builders/docker'
-    env:
-      - 'DOCKER_BUILDKIT=1'
+    entrypoint: 'bash'
     args:
-      - build
-      - '--build-arg'
-      - 'GOOGLE_API_KEY_ARG=$GOOGLE_API_KEY'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/carbonlens:$BUILD_ID'
-      - '-t'
-      - 'gcr.io/$PROJECT_ID/carbonlens:latest'
-      - '.'
-    secretEnv: ['GOOGLE_API_KEY']
+      - '-c'
+      - |
+        docker build \
+          --build-arg GOOGLE_API_KEY_ARG=$$_GEMINI_KEY \
+          -t gcr.io/$PROJECT_ID/carbonlens:$BUILD_ID \
+          -t gcr.io/$PROJECT_ID/carbonlens:latest \
+          .
+    secretEnv: ['_GEMINI_KEY']
 
   # Step 2: Push image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
@@ -25,7 +24,7 @@ steps:
       - 'gcr.io/$PROJECT_ID/carbonlens'
 
   # Step 3: Deploy to Cloud Run
-  # GOOGLE_API_KEY is injected at runtime from Secret Manager — NOT baked into image
+  # GOOGLE_API_KEY injected at runtime from Secret Manager — NOT baked into image
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -44,13 +43,12 @@ steps:
       - '--max-instances=5'
       - '--port=8080'
 
-# Secrets available to build steps
+# Secret Manager binding
 availableSecrets:
   secretManager:
     - versionName: projects/$PROJECT_ID/secrets/google-api-key/versions/latest
-      env: GOOGLE_API_KEY
+      env: '_GEMINI_KEY'
 
-# Timeout: 20 minutes
 timeout: '1200s'
 
 options:
