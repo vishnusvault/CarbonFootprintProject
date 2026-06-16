@@ -35,25 +35,19 @@ DATA_DIR = ROOT / "rag" / "data"
 COLLECTION_NAME = "carbonlens_climate"
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
-EMBEDDING_MODEL = "text-embedding-004"
+EMBEDDING_MODEL = "gemini-embedding-001"
 
-# Use v1 API (not v1beta) — text-embedding-004 only available on v1
-from google.genai import types as genai_types
-_client = genai.Client(
-    api_key=GOOGLE_API_KEY,
-    http_options=genai_types.HttpOptions(api_version="v1"),
-)
+_client = genai.Client(api_key=GOOGLE_API_KEY)
 
 
 # ── Embedding Function ────────────────────────────────────────────────────────
-def embed_texts(texts: list[str], task_type: str = "retrieval_document") -> list[list[float]]:
-    """Batch embed texts using Google text-embedding-004."""
+def embed_texts(texts: list[str], task_type: str = "RETRIEVAL_DOCUMENT") -> list[list[float]]:
+    """Batch embed texts using gemini-embedding-001."""
     embeddings = []
     for text in texts:
         result = _client.models.embed_content(
             model=EMBEDDING_MODEL,
             contents=text,
-            config={"task_type": task_type},
         )
         embeddings.append(result.embeddings[0].values)
     return embeddings
@@ -70,7 +64,6 @@ class GoogleEmbeddingFunction(chromadb.EmbeddingFunction):
             result = _client.models.embed_content(
                 model=EMBEDDING_MODEL,
                 contents=text,
-                config=genai_types.EmbedContentConfig(task_type="RETRIEVAL_DOCUMENT"),
             )
             results.append(result.embeddings[0].values)
         return results

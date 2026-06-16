@@ -12,7 +12,6 @@ ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(ROOT / "backend"))
 
 from google import genai
-from google.genai import types as genai_types
 import chromadb
 from chromadb import Settings
 
@@ -20,11 +19,7 @@ from config import GOOGLE_API_KEY, RAG_DB_PATH, GEMINI_EMBEDDING_MODEL
 
 logger = logging.getLogger(__name__)
 
-# Use v1 API — text-embedding-004 only available on v1 (not v1beta)
-_genai_client = genai.Client(
-    api_key=GOOGLE_API_KEY,
-    http_options=genai_types.HttpOptions(api_version="v1"),
-)
+_genai_client = genai.Client(api_key=GOOGLE_API_KEY)
 
 COLLECTION_NAME = "carbonlens_climate"
 
@@ -53,7 +48,6 @@ def _embed_query(text: str) -> list[float]:
     result = _genai_client.models.embed_content(
         model=GEMINI_EMBEDDING_MODEL,
         contents=text,
-        config=genai_types.EmbedContentConfig(task_type="RETRIEVAL_QUERY"),
     )
     return result.embeddings[0].values
 
