@@ -1,0 +1,43 @@
+IEA — CO2 Emissions in 2023
+Source: International Energy Agency, March 2024
+
+GLOBAL ENERGY CO2 EMISSIONS
+
+Global energy-related CO2 emissions grew by 1.1% in 2023 to reach a new record high of 37.4 billion tonnes. This was driven primarily by strong growth in energy demand in emerging market and developing economies, particularly in Asia. However, the increase was partly offset by record deployments of clean energy technologies including solar PV, wind power, and electric vehicles.
+
+ELECTRICITY SECTOR
+
+The global average electricity grid emission factor in 2023 was approximately 0.436 kgCO2/kWh, though this varies enormously by country:
+- India: 0.82 kgCO2/kWh (coal-heavy grid, improving with solar additions)
+- China: 0.56 kgCO2/kWh
+- European Union: 0.233 kgCO2/kWh (significant renewables)
+- United States: 0.386 kgCO2/kWh
+- France: 0.056 kgCO2/kWh (nuclear-heavy)
+- Norway: 0.012 kgCO2/kWh (hydro-dominated)
+
+Electric vehicles charged on India's current grid emit approximately 0.053 kgCO2e/km (for a typical EV efficiency of 0.065 kWh/km × 0.82 kgCO2/kWh). This is still 70% less than a comparable petrol car (0.180 kgCO2/km).
+
+TRANSPORT
+
+Road transport accounted for 7.8 billion tonnes of CO2 in 2023. Aviation emitted 895 million tonnes of CO2. Shipping emitted 862 million tonnes. Together, transport is the second largest sectoral emitter after electricity.
+
+Electric vehicle sales reached 14 million in 2023, representing 18% of all car sales globally. China accounted for 60% of global EV sales. India's EV market is growing rapidly but still represents less than 2% of new car sales.
+
+Public transport has dramatically lower emissions per passenger-km:
+- Urban bus (diesel): 0.089 kgCO2e/passenger-km
+- Metro/subway (electric): 0.041 kgCO2e/passenger-km (India grid)
+- Intercity train: 0.041 kgCO2e/passenger-km (Indian Railways)
+- Domestic aviation: 0.255 kgCO2e/passenger-km
+- Long-haul aviation: 0.195 kgCO2e/passenger-km
+
+INDIA ENERGY PROFILE
+
+India's total energy-related CO2 emissions in 2023 were approximately 2.9 billion tonnes, making it the third largest emitter after China and the United States. However, India's per capita emissions of 2.0 tCO2 remain well below the global average of 4.6 tCO2 per capita.
+
+India added 18 GW of solar capacity in 2023, the third consecutive year of record additions. The share of renewables in India's electricity generation reached approximately 23% in 2023. India's coal power generation still accounts for about 70% of electricity production.
+
+ENERGY EFFICIENCY
+
+Improving energy efficiency is the "first fuel" of clean energy transitions. Air conditioning and appliances represent a major and growing emissions source in India's residential sector. A 5-star rated air conditioner uses approximately 40% less electricity than a 1-star model, saving roughly 500 kgCO2 per year in typical Indian usage.
+
+LED lighting uses 75% less electricity than incandescent bulbs. Replacing one incandescent bulb with LED saves approximately 40 kgCO2 per year in India.

@@ -1,0 +1,44 @@
+# node_modules — never in Docker image
+**/node_modules
+frontend/node_modules
+
+# Frontend build output (built in Docker, not needed from host)
+frontend/dist
+frontend/build
+
+# Python virtual env (created locally, not in container)
+**/.venv
+**/venv
+**/__pycache__
+**/*.pyc
+**/*.pyo
+
+# RAG vector DB (rebuilt during Docker build)
+rag/db/
+
+# Environment files (NEVER in Docker image)
+.env
+.env.local
+*.env
+
+# Git
+.git
+.gitignore
+
+# Dev tools
+.vscode
+.idea
+*.swp
+*.swo
+
+# Docs and local files not needed in container
+*.md
+*.docx
+CarbonLens_PRD*
+
+# Test files (not needed in production image)
+**/tests/
+**/.pytest_cache
+
+# Logs
+*.log

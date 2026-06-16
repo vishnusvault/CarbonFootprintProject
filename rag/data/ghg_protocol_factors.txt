@@ -1,0 +1,83 @@
+GHG Protocol — Emission Factors from Cross-Sector Tools (2023 Edition)
+Source: World Resources Institute / World Business Council for Sustainable Development
+
+OVERVIEW OF GHG PROTOCOL EMISSION FACTORS
+
+The GHG Protocol provides the world's most widely used greenhouse gas accounting standards. The emission factors below are drawn from the Cross-Sector Tools and are consistent with IPCC AR6 Global Warming Potential values (GWP100).
+
+All values are in kgCO2e per unit (including CO2, CH4, and N2O converted to CO2 equivalent using GWP100).
+
+TRANSPORT EMISSION FACTORS
+
+Road Transport:
+- Petrol/gasoline passenger car (average): 0.180 kgCO2e/km (lifecycle including fuel production)
+- Diesel passenger car (average): 0.171 kgCO2e/km
+- Electric vehicle (India grid 0.82 kgCO2/kWh, typical EV 0.065 kWh/km): 0.053 kgCO2e/km
+- Diesel urban bus (per passenger): 0.089 kgCO2e/km
+- Electric metro rail (India grid): 0.041 kgCO2e/passenger-km
+- Diesel intercity train (India): 0.041 kgCO2e/passenger-km
+
+Aviation:
+- Short-haul flights (<3700 km, economy class): 0.255 kgCO2e/passenger-km
+  (includes Radiative Forcing Index multiplier of 1.9 for non-CO2 climate effects at altitude)
+- Long-haul flights (>3700 km, economy class): 0.195 kgCO2e/passenger-km
+  (RFI multiplier applied; long-haul more fuel-efficient per km than short-haul)
+- Business class multiplier: approximately 2.9× economy class (seat width, cargo allocation)
+- First class multiplier: approximately 4× economy class
+
+Key aviation routes and their CO2e emissions (economy, one-way):
+- Chennai to Mumbai (1,328 km, short-haul): 338.6 kg CO2e
+- Delhi to Bangalore (1,730 km, short-haul): 441.2 kg CO2e
+- Mumbai to London (7,192 km, long-haul): 1,402.4 kg CO2e
+
+ENERGY EMISSION FACTORS
+
+Electricity grid factors (kgCO2e/kWh):
+- India national average (CEA 2024): 0.820
+- United States national average (EPA eGRID 2022): 0.386
+- European Union average (IEA 2023): 0.233
+- United Kingdom (BEIS 2023): 0.233
+- China (IEA 2023): 0.560
+- Global average: 0.436
+
+Stationary combustion:
+- LPG (liquefied petroleum gas): 1.560 kgCO2e/litre (including CH4 and N2O)
+- Diesel fuel: 2.68 kgCO2e/litre
+- Petrol/gasoline: 2.31 kgCO2e/litre
+- Natural gas: 0.202 kgCO2e/kWh (or 2.03 kgCO2e/m³)
+- Diesel generator (average load): 2.60 kgCO2e/hour
+
+FOOD AND LAND USE
+
+Per meal lifecycle emissions (including land use change, farming, processing, transport):
+- Beef-heavy meal: 6.0 kgCO2e per meal (range 4–10 depending on production system)
+- Mixed omnivore meal: 3.5 kgCO2e per meal
+- Vegetarian meal: 2.0 kgCO2e per meal
+- Vegan meal: 1.5 kgCO2e per meal
+
+Source for food factors: Poore & Nemecek (2018), "Reducing food's environmental impacts through producers and consumers," Science, 360(6392).
+
+Key food comparisons:
+- 1 kg beef: 60 kgCO2e | 1 kg chicken: 6.9 kgCO2e | 1 kg tofu: 3.0 kgCO2e | 1 kg lentils: 0.9 kgCO2e
+- Swapping from beef to chicken for one meal per week saves approximately 156 kgCO2e per year
+- Going vegetarian saves approximately 0.5 tCO2e per year vs. average omnivore diet
+
+CONSUMER GOODS
+
+Electronics (lifecycle, including manufacturing, use, end-of-life):
+- Smartphone: 70 kgCO2e (manufacturing dominates — ~80% of lifetime impact)
+- Laptop: 300–400 kgCO2e
+- Television (55"): 400–600 kgCO2e
+- Small electronics (earphones, tablet): 30 kgCO2e (average)
+- Large electronics (TV, washing machine): 200 kgCO2e (average)
+
+Clothing:
+- Average clothing item (cotton t-shirt to synthetic jacket): 10 kgCO2e per item
+- A pair of jeans: 33 kgCO2e (including cotton production, dyeing, transport)
+- Buying second-hand clothing reduces emissions by ~65–70%
+
+CARBON BUDGET CONTEXT
+
+The remaining 1.5°C carbon budget (as of 2020) is approximately 400–500 GtCO2. At current global emission rates of ~37 GtCO2/year, this budget will be exhausted in approximately 11–14 years without major reductions.
+
+India's fair share of the remaining budget (population-based) is approximately 50–80 GtCO2, requiring per-capita emissions to stay below approximately 3.5 tCO2e/year through 2050.

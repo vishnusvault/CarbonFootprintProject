@@ -1,0 +1,52 @@
+{
+  "transport": {
+    "car_petrol":    { "km": 0.180 },
+    "car_diesel":    { "km": 0.171 },
+    "car_ev":        { "km": 0.053 },
+    "flight_short":  { "km": 0.255 },
+    "flight_long":   { "km": 0.195 },
+    "bus":           { "km": 0.089 },
+    "metro":         { "km": 0.041 },
+    "train":         { "km": 0.041 }
+  },
+  "energy": {
+    "electricity_IN": { "kWh": 0.820 },
+    "electricity_EU": { "kWh": 0.233 },
+    "electricity_US": { "kWh": 0.386 },
+    "lpg":            { "litre": 1.560 },
+    "generator":      { "hour": 2.600 }
+  },
+  "food": {
+    "meal_meat_heavy":  { "meal": 6.0 },
+    "meal_mixed":       { "meal": 3.5 },
+    "meal_vegetarian":  { "meal": 2.0 },
+    "meal_vegan":       { "meal": 1.5 }
+  },
+  "purchase": {
+    "electronics_small": { "item": 30 },
+    "electronics_large": { "item": 200 },
+    "clothing":          { "item": 10 }
+  },
+  "_sources": {
+    "car_petrol":        "IPCC AR6 Table 10.SM.4 — 0.18 kgCO2e/km for average petrol passenger car",
+    "car_diesel":        "IPCC AR6 Table 10.SM.4 — 0.171 kgCO2e/km for average diesel passenger car",
+    "car_ev":            "IEA Tracking Clean Energy Progress 2023 — EV on India grid (0.82 kgCO2/kWh)",
+    "flight_short":      "GHG Protocol Cross-Sector Tool 2023 — short-haul <3700 km economy class incl. RFI",
+    "flight_long":       "GHG Protocol Cross-Sector Tool 2023 — long-haul >3700 km economy class incl. RFI",
+    "bus":               "IPCC AR6 — average diesel bus per passenger-km",
+    "metro":             "CEA India Grid Emission Factor 2024 — electric rail on India grid",
+    "train":             "Indian Railways Annual Report 2023 — 0.041 kgCO2e/passenger-km",
+    "electricity_IN":    "CEA India Emission Factor 2024 — 0.82 kgCO2/kWh (national average)",
+    "electricity_EU":    "IEA CO2 Emissions in 2023 — EU-27 average grid intensity",
+    "electricity_US":    "US EPA eGRID 2022 — US national average 0.386 kgCO2/kWh",
+    "lpg":               "IPCC AR6 — LPG combustion 1.56 kgCO2e/litre",
+    "generator":         "Estimated diesel genset 2.6 kgCO2e/hour at average load",
+    "meal_meat_heavy":   "Poore & Nemecek 2018, Science — meat-based meal lifecycle 6 kgCO2e",
+    "meal_mixed":        "Poore & Nemecek 2018, Science — mixed omnivore meal 3.5 kgCO2e",
+    "meal_vegetarian":   "Poore & Nemecek 2018, Science — vegetarian meal 2.0 kgCO2e",
+    "meal_vegan":        "Poore & Nemecek 2018, Science — vegan meal 1.5 kgCO2e",
+    "electronics_small": "European Environment Agency — small electronics lifecycle 30 kgCO2e/item",
+    "electronics_large": "IVF Sweden 2007 — large electronics (TV/laptop) lifecycle ~200 kgCO2e",
+    "clothing":          "WRAP UK Textiles 2017 — average clothing item 10 kgCO2e lifecycle"
+  }
+}

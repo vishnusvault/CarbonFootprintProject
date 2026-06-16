@@ -1,0 +1,84 @@
+Our World in Data — CO2 and Greenhouse Gas Emissions
+Source: ourworldindata.org/co2-emissions | Based on Global Carbon Project, OWID team
+
+PER-CAPITA CO2 EMISSIONS BY COUNTRY (2022)
+
+Global average: 4.7 tCO2 per person per year
+India: 1.9 tCO2 per person per year (well below global average)
+China: 7.4 tCO2 per person per year
+United States: 14.9 tCO2 per person per year
+European Union: 6.4 tCO2 per person per year
+Germany: 8.1 tCO2 per person per year
+United Kingdom: 4.9 tCO2 per person per year
+Australia: 15.2 tCO2 per person per year
+Japan: 8.6 tCO2 per person per year
+Brazil: 2.4 tCO2 per person per year
+
+Note: These figures include only territorial CO2 emissions from fossil fuels and industry, not land-use change. When consumption-based emissions are used (including imported goods), UK rises to 7.7 tCO2 and India to 2.1 tCO2.
+
+INDIA-SPECIFIC BREAKDOWN (2022)
+
+India's total CO2 emissions: approximately 2.8 billion tonnes CO2
+- Electricity & heat: 49% of total
+- Industry: 23%
+- Transport: 13%
+- Buildings: 8%
+- Other: 7%
+
+India's emissions have grown by approximately 6% per year over the past decade, driven by rapid economic development. However, per-capita emissions remain among the lowest of major economies.
+
+Daily CO2 equivalent:
+- India average: 5.2 kg CO2e/day (1.9 tCO2e/year ÷ 365)
+- Global average: 12.9 kg CO2e/day (4.7 tCO2e/year ÷ 365)
+- USA average: 40.8 kg CO2e/day
+
+LIFESTYLE AND CONSUMPTION EMISSIONS
+
+Research by Ivanova et al. (2020) "Quantifying the potential for climate change mitigation of consumption options" in Environmental Research Letters quantified the CO2-saving potential of individual lifestyle changes:
+
+High impact actions (>1 tCO2e/year saved):
+- Having one fewer child: 58.6 tCO2e/year (aggregate, not personal lifestyle)
+- Living car-free: 2.4 tCO2e/year saved
+- Avoiding one long-haul flight per year: 1.5–2.0 tCO2e/year
+- Shifting to a plant-based diet: 0.5–1.5 tCO2e/year
+
+Medium impact (0.1–1 tCO2e/year saved):
+- Buying green electricity: 1.47 tCO2e/year (where coal grid)
+- Switching to an electric car: 1.0–1.5 tCO2e/year (India)
+- Reducing home heating: 0.3 tCO2e/year
+- Buying energy efficient appliances: 0.3 tCO2e/year
+
+Lower impact (>0.1 tCO2e/year):
+- Reducing food waste by 50%: 0.08 tCO2e/year
+- Recycling properly: 0.06 tCO2e/year
+- Line-drying clothes: 0.05 tCO2e/year
+
+HISTORICAL TRENDS
+
+Global CO2 emissions from fossil fuels have increased from approximately 6 GtCO2 in 1950 to 37 GtCO2 in 2023. The 2020 COVID-19 pandemic caused a 5.4% decline, the largest annual drop ever recorded. Emissions rebounded strongly in 2021 and 2022.
+
+The top 5 emitters account for approximately 62% of global CO2:
+1. China: 32%
+2. United States: 13%
+3. India: 7%
+4. Russia: 5%
+5. Japan: 3%
+
+CARBON EQUIVALENTS (Useful Metaphors)
+
+These equivalents help make abstract CO2 numbers tangible:
+- 1 kg CO2e = driving approximately 5.5 km in a petrol car
+- 1 kg CO2e = burning approximately 0.4 litres of petrol
+- 1 kg CO2e = a tree absorbing CO2 for approximately 2 weeks
+- 100 kg CO2e = the carbon sequestered by about 1.4 trees in a year
+- 1 tCO2e = driving approximately 5,500 km in a petrol car
+
+Tree sequestration rates:
+- A young tree sequesters approximately 6 kg CO2/year
+- A mature tree sequesters approximately 22 kg CO2/year
+- A hectare of forest sequesters approximately 5,500 kg CO2/year
+
+Flight equivalents (one-way, economy):
+- Mumbai → Delhi (1,150 km): 293 kg CO2e → equivalent to driving 1,628 km
+- Chennai → Mumbai (1,328 km): 338 kg CO2e → equivalent to 3.4 weeks of average Indian per-capita emissions
+- Delhi → London (6,700 km): 1,307 kg CO2e → equivalent to 251 days of average Indian per-capita emissions

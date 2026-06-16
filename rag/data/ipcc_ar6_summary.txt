@@ -1,0 +1,34 @@
+IPCC AR6 Synthesis Report — Summary for Policymakers (2022)
+Source: Intergovernmental Panel on Climate Change, Sixth Assessment Report
+
+GLOBAL WARMING AND CARBON BUDGETS
+
+Human activities, principally through emissions of greenhouse gases, have unequivocally caused global warming, with global surface temperature reaching 1.1°C above 1850–1900 in 2011–2020. Global greenhouse gas emissions have continued to increase, with unequal historical and ongoing contributions arising from unsustainable energy use, land use and land-use change, lifestyles and patterns of consumption and production across regions, between and within countries, and among individuals.
+
+Limiting global warming will require major transitions in the energy sector. This will involve a substantial reduction in fossil fuel use, widespread electrification, improved energy efficiency, and use of alternative fuels (such as hydrogen). In mitigation pathways limiting warming to 2°C or lower, coal use without CCS declines steeply by 2030.
+
+SECTORAL EMISSIONS
+
+Transport currently accounts for about 15% of global CO2 emissions. Aviation contributes approximately 2.5% of global CO2 emissions and about 3.5% of effective radiative forcing when non-CO2 effects are included. Road transport (cars, trucks) accounts for approximately 12% of global CO2 emissions. Electrification of road transport is one of the most effective mitigation strategies available.
+
+Buildings account for 21% of global emissions (operational). Improving building energy efficiency and switching to low-carbon heating are key mitigation levers.
+
+Food systems account for 21–37% of total net anthropogenic GHG emissions. Within food, livestock supply chains contribute about 14.5% of global GHG emissions (FAO 2013). Beef production emits 70–80 kgCO2e per 100g protein, compared to tofu at 3.5 kgCO2e and legumes at 2 kgCO2e per 100g protein.
+
+INDIVIDUAL ACTION POTENTIAL
+
+Demand-side mitigation options across all sectors could reduce global GHG emissions by 40–70% by 2050. The highest-potential individual actions include:
+- Shifting to plant-rich diets: 0.5–1.5 tCO2e/year reduction per person
+- Reducing long-haul aviation: a return transatlantic flight emits approximately 1.5–2.0 tCO2e per passenger
+- Switching to electric vehicles: EV lifecycle emissions are 50–80% lower than petrol vehicles (grid dependent)
+- Improving home energy efficiency: insulation and heat pumps can cut home emissions by 40–60%
+
+INDIA-SPECIFIC DATA
+
+India's per capita CO2 emissions were approximately 1.9 tCO2e in 2022, well below the global average of 4.7 tCO2e. India's electricity grid emission factor is approximately 0.82 kgCO2 per kWh (CEA 2024). India has committed to 500 GW of renewable energy capacity by 2030 under its NDC.
+
+The Indian Railways system emits approximately 0.041 kgCO2e per passenger-km, making it one of the most carbon-efficient long-distance transport modes in the world. By comparison, domestic aviation emits approximately 0.255 kgCO2e per passenger-km.
+
+KEY TEMPERATURE TARGETS
+
+Limiting warming to 1.5°C requires CO2 emissions to fall by about 45% from 2010 levels by 2030 and reach net zero by around 2050. Limiting warming to 2°C requires similar reductions by roughly 2040–2050. Every 0.1°C of warming avoided matters for reducing harm.
