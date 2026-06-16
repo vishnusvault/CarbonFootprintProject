@@ -1,0 +1,69 @@
+# =============================================================
+# CarbonLens — .gitignore
+# ⚠️  SECURITY: This file must be committed FIRST.
+#     NEVER remove entries from this file without team review.
+# =============================================================
+
+# --- Secrets & Environment Variables (NEVER commit these) ---
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+*.env
+
+# --- Google Cloud / Service Account Keys ---
+*.json.key
+service-account*.json
+gcp-key*.json
+credentials*.json
+application_default_credentials.json
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# --- Node / Frontend ---
+node_modules/
+frontend/dist/
+frontend/build/
+.npm
+.eslintcache
+
+# --- RAG Vector Database (rebuilt at Docker build time) ---
+rag/db/
+rag/chroma/
+
+# --- Docker ---
+.dockerignore.local
+
+# --- IDE ---
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+logs/
