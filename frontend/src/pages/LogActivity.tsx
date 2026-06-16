@@ -34,19 +34,35 @@ const ACTIVITY_OPTIONS: Record<Category, ActivityOption[]> = {
     { value: 'bus', label: 'Bus', unit: 'km', isRoute: true },
     { value: 'metro', label: 'Metro', unit: 'km', isRoute: true },
     { value: 'train', label: 'Train', unit: 'km', isRoute: true },
+    { value: 'cycling', label: 'Cycling', unit: 'km', isRoute: true },
+    { value: 'walking', label: 'Walking', unit: 'km', isRoute: true },
   ],
   energy: [
     { value: 'electricity_IN', label: 'Electricity (India)', unit: 'kWh' },
-    { value: 'electricity_EU', label: 'Electricity (EU)', unit: 'kWh' },
-    { value: 'electricity_US', label: 'Electricity (US)', unit: 'kWh' },
     { value: 'lpg', label: 'LPG/Gas', unit: 'kg' },
     { value: 'generator', label: 'Generator', unit: 'litre' },
   ],
   food: [
-    { value: 'meal_meat_heavy', label: 'Meat-heavy Meal', unit: 'meal' },
-    { value: 'meal_mixed', label: 'Mixed Meal', unit: 'meal' },
-    { value: 'meal_vegetarian', label: 'Vegetarian Meal', unit: 'meal' },
-    { value: 'meal_vegan', label: 'Vegan Meal', unit: 'meal' },
+    { value: 'food_beef', label: 'Beef', unit: 'g' },
+    { value: 'food_lamb', label: 'Lamb', unit: 'g' },
+    { value: 'food_pork', label: 'Pork', unit: 'g' },
+    { value: 'food_chicken', label: 'Chicken', unit: 'g' },
+    { value: 'food_fish', label: 'Fish', unit: 'g' },
+    { value: 'food_eggs', label: 'Eggs', unit: 'g' },
+    { value: 'food_cheese', label: 'Cheese', unit: 'g' },
+    { value: 'food_rice', label: 'Rice', unit: 'g' },
+    { value: 'food_wheat', label: 'Wheat/Bread', unit: 'g' },
+    { value: 'food_lentils', label: 'Lentils/Beans', unit: 'g' },
+    { value: 'food_tofu', label: 'Tofu/Soy', unit: 'g' },
+    { value: 'food_potatoes', label: 'Potatoes', unit: 'g' },
+    { value: 'food_tomatoes', label: 'Tomatoes', unit: 'g' },
+    { value: 'food_apples', label: 'Apples', unit: 'g' },
+    { value: 'food_bananas', label: 'Bananas', unit: 'g' },
+    { value: 'drink_milk', label: 'Milk', unit: 'ml' },
+    { value: 'drink_coffee', label: 'Coffee', unit: 'ml' },
+    { value: 'drink_tea', label: 'Tea', unit: 'ml' },
+    { value: 'drink_cola', label: 'Soft Drink (Cola)', unit: 'ml' },
+    { value: 'drink_beer', label: 'Beer', unit: 'ml' },
   ],
   purchase: [
     { value: 'electronics_small', label: 'Small Electronics', unit: 'item' },
@@ -322,13 +338,15 @@ export default function LogActivity() {
             </>
           ) : (
             <div className="form-group">
-              <label className="form-label">Quantity ({activityType.unit})</label>
+              <label className="form-label">
+                Quantity {activityType.unit === 'meal' || activityType.unit === 'item' ? '' : `(${activityType.unit})`}
+              </label>
               <input
                 className="form-input"
                 type="number"
                 min="0"
                 step="0.1"
-                placeholder={`e.g. 10`}
+                placeholder="e.g. 10"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
               />
