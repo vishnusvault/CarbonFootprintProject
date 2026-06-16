@@ -27,6 +27,7 @@ export function saveActivity(activity: Activity): void {
   const activities = getActivities();
   activities.push(activity);
   localStorage.setItem(KEYS.activities, JSON.stringify(activities));
+  window.dispatchEvent(new Event('carbonlens_storage'));
 }
 
 export function updateActivity(id: string, patch: Partial<Activity>): void {
@@ -41,6 +42,7 @@ export function updateActivity(id: string, patch: Partial<Activity>): void {
 export function deleteActivity(id: string): void {
   const activities = getActivities().filter((a) => a.id !== id);
   localStorage.setItem(KEYS.activities, JSON.stringify(activities));
+  window.dispatchEvent(new Event('carbonlens_storage'));
 }
 
 export function getActivitiesByDateRange(from: Date, to: Date): Activity[] {

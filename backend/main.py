@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from config import APP_ENV, CORS_ORIGIN, LOG_LEVEL
-from routers import activities, insights, report, rag as rag_router
+from routers import activities, insights, report, rag as rag_router, scan
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -50,6 +50,7 @@ app.include_router(activities.router)
 app.include_router(insights.router)
 app.include_router(report.router)
 app.include_router(rag_router.router)
+app.include_router(scan.router)
 
 # ── Static Files (React SPA) ──────────────────────────────────────────────────
 STATIC_DIR = Path(__file__).parent / "static"

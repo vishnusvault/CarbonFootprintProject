@@ -165,14 +165,19 @@ export default function Trends() {
         )}
       </div>
 
-      {/* Link to Journey */}
+      {/* Link to Journey and Report */}
       <div className="card" style={{ textAlign: 'center', padding: '20px' }}>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 12 }}>
-          🌟 See your full impact journey and conscious swaps
+          🌟 See your full impact journey and weekly digest
         </p>
-        <Link to="/journey" className="btn btn-secondary btn-full">
-          View My Journey →
-        </Link>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <Link to="/journey" className="btn btn-secondary btn-full">
+            View My Journey →
+          </Link>
+          <Link to="/report" className="btn btn-primary btn-full">
+            View Weekly Report →
+          </Link>
+        </div>
       </div>
     </main>
   );

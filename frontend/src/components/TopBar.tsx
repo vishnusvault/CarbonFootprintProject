@@ -6,9 +6,19 @@ export default function TopBar() {
   const [weekCO2, setWeekCO2] = useState(0);
 
   useEffect(() => {
-    const activities = getWeekActivities();
-    const total = activities.reduce((sum, a) => sum + a.co2e_kg, 0);
-    setWeekCO2(total);
+    function update() {
+      const activities = getWeekActivities();
+      const total = activities.reduce((sum, a) => sum + a.co2e_kg, 0);
+      setWeekCO2(total);
+    }
+    
+    update();
+    window.addEventListener('carbonlens_storage', update);
+    window.addEventListener('storage', update);
+    return () => {
+      window.removeEventListener('carbonlens_storage', update);
+      window.removeEventListener('storage', update);
+    };
   }, []);
 
   return (

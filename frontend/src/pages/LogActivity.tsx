@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Check, Loader2 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import AILogger from '../components/AILogger';
 import { calculateCO2e, suggestAlternative, getCities } from '../lib/api';
 import { saveActivity } from '../lib/localStorage';
 import type { Activity } from '../lib/api';
@@ -80,7 +81,7 @@ const ACTIVITY_OPTIONS: Record<Category, ActivityOption[]> = {
 export default function LogActivity() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
-  const totalSteps = 5;
+  const totalSteps = 6;
 
   // Step 1
   const [category, setCategory] = useState<Category | null>(null);
@@ -99,6 +100,7 @@ export default function LogActivity() {
   const [calcLoading, setCalcLoading] = useState(false);
   const [calcError, setCalcError] = useState('');
   const [savedActivity, setSavedActivity] = useState<Activity | null>(null);
+  const [entryDate, setEntryDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
   // Step 5
   const [suggestion, setSuggestion] = useState<{ suggestion: string; co2_saving_kg: number } | null>(null);
   const [suggestLoading, setSuggestLoading] = useState(false);
@@ -123,13 +125,12 @@ export default function LogActivity() {
     setCalcLoading(true);
     setCalcError('');
     try {
-      const today = new Date().toISOString().split('T')[0];
       const params = {
         category,
         activity_type: activityType.value,
         quantity: activityType.isRoute ? 1 : parseFloat(quantity) || 1,
         unit: activityType.unit,
-        date: today,
+        date: entryDate,
         ...(activityType.isRoute ? { origin, destination } : {}),
       };
       const result = await calculateCO2e(params);
@@ -139,7 +140,7 @@ export default function LogActivity() {
       // Save activity
       const act: Activity = {
         id: uuidv4(),
-        date: today,
+        date: entryDate,
         category,
         activity_type: activityType.value,
         quantity: activityType.isRoute ? (result.distance_km ?? 0) : parseFloat(quantity) || 1,
@@ -149,7 +150,7 @@ export default function LogActivity() {
         created_at: new Date().toISOString(),
         ...(activityType.isRoute ? { origin, destination, distance_km: result.distance_km } : {}),
       };
-      saveActivity(act);
+      setSavedActivity(act);
       setSavedActivity(act);
       goNext();
     } catch (err) {
@@ -183,15 +184,19 @@ export default function LogActivity() {
 
   function handleConsciousSwap() {
     if (!savedActivity) return;
-    // Update saved activity with conscious_swap=true
-    const activities = JSON.parse(localStorage.getItem('carbonlens_activities') ?? '[]') as Activity[];
-    const idx = activities.findIndex((a) => a.id === savedActivity.id);
-    if (idx !== -1) {
-      activities[idx].conscious_swap = true;
-      activities[idx].co2_avoided_kg = suggestion?.co2_saving_kg ?? 0;
-      localStorage.setItem('carbonlens_activities', JSON.stringify(activities));
-    }
-    navigate('/');
+    const finalAct = {
+      ...savedActivity,
+      conscious_swap: true,
+      co2_avoided_kg: suggestion?.co2_saving_kg ?? 0,
+    };
+    saveActivity(finalAct);
+    goNext();
+  }
+
+  function handleDismiss() {
+    if (!savedActivity) return;
+    saveActivity(savedActivity);
+    goNext();
   }
 
   const filteredOriginCities = cities.filter((c) =>
@@ -245,6 +250,8 @@ export default function LogActivity() {
           >
             Next <ChevronRight size={18} />
           </button>
+          
+          <AILogger />
         </div>
       )}
 
@@ -399,6 +406,18 @@ export default function LogActivity() {
                   <span>{quantity} {activityType.unit}</span>
                 </div>
               )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, borderTop: '1px solid var(--border-light)', paddingTop: 12 }}>
+                <span className="form-label" style={{ marginBottom: 0 }}>Date</span>
+                <input 
+                  type="date" 
+                  className="form-input" 
+                  style={{ width: 'auto', padding: '4px 8px' }}
+                  min={new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().split('T')[0]}
+                  max={new Date().toISOString().split('T')[0]}
+                  value={entryDate}
+                  onChange={(e) => setEntryDate(e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
@@ -476,18 +495,40 @@ export default function LogActivity() {
                 <button className="btn btn-primary btn-sm" onClick={handleConsciousSwap} type="button">
                   <Check size={15} /> Yes, I considered this ✓
                 </button>
-                <button className="btn btn-ghost btn-sm" onClick={() => navigate('/')} type="button">
+                <button className="btn btn-ghost btn-sm" onClick={handleDismiss} type="button">
                   Dismiss
                 </button>
               </div>
             </div>
           )}
+        </div>
+      )}
 
-          {!suggestLoading && !suggestion && (
-            <button className="btn btn-primary btn-full" onClick={() => navigate('/')} type="button">
-              Back to Dashboard
-            </button>
-          )}
+      {/* ── Step 5: Saved Confirmation ── */}
+      {step === 5 && savedActivity && (
+        <div className="stack" style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '16px' }}>✅</div>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--green-800)' }}>Activity Logged!</h2>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
+            <strong>{activityType?.label}</strong> — {savedActivity.co2e_kg.toFixed(2)} kg CO₂e saved
+          </p>
+          <button onClick={() => navigate('/')} className="btn btn-primary btn-full btn-lg" type="button" style={{ marginBottom: 12 }}>
+            View Dashboard
+          </button>
+          <button onClick={() => {
+            setStep(0);
+            setCategory(null);
+            setActivityType(null);
+            setOrigin('');
+            setDestination('');
+            setQuantity('');
+            setCo2Result(null);
+            setDistanceKm(null);
+            setSavedActivity(null);
+            setSuggestion(null);
+          }} className="btn btn-ghost btn-full" type="button">
+            Log Another Activity
+          </button>
         </div>
       )}
     </main>

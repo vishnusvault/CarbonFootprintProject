@@ -54,6 +54,7 @@ export interface Profile {
   country: string;
   primary_transport: "car" | "public" | "cycle" | "walk";
   diet: "meat_heavy" | "mixed" | "vegetarian" | "vegan";
+  monthly_budget_kg?: number;
   onboarded_at: string;
 }
 
@@ -114,6 +115,28 @@ export async function suggestAlternative(
   });
 }
 
+export async function parseNatural(text: string): Promise<{ items: any[] }> {
+  return apiFetch("/api/v1/activities/parse-natural", {
+    method: "POST",
+    body: JSON.stringify({ text }),
+  });
+}
+
+export async function scanReceipt(file: File): Promise<{ items: any[], count: number }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  
+  const res = await fetch("/api/v1/scan/receipt", {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.detail || "Failed to scan receipt");
+  }
+  return res.json();
+}
+
 export async function generateInsights(
   activitySummary: object,
   profile: Profile,
@@ -144,10 +167,15 @@ export async function getWeeklyReport(
   });
 }
 
-export async function ragQuery(question: string, ragChunks: string[] = []): Promise<RAGQueryResponse> {
+export async function ragQuery(
+  messages: any[],
+  userActivitiesSummary: string,
+  question: string,
+  ragChunks: string[] = []
+): Promise<RAGQueryResponse> {
   return apiFetch("/api/v1/rag/query", {
     method: "POST",
-    body: JSON.stringify({ question, rag_chunks: ragChunks }),
+    body: JSON.stringify({ messages, user_activities_summary: userActivitiesSummary, question, rag_chunks: ragChunks }),
   });
 }
 

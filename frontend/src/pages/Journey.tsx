@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   BarChart,
   Bar,
@@ -59,6 +60,7 @@ function getBestStreak(activities: Activity[], dailyAvg: number): number {
 }
 
 export default function Journey() {
+  const navigate = useNavigate();
   const allActivities = getActivities();
 
   const consciousActivities = allActivities.filter((a: Activity) => a.conscious_swap);
@@ -208,8 +210,15 @@ export default function Journey() {
           <div className="card section">
             <div className="section-title">CO₂ Avoided per Month (kg)</div>
             {swapCount === 0 ? (
-              <div style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Make conscious swaps when logging activities to see this chart!
+              <div className="text-center space-y-3 py-6" style={{ textAlign: 'center', padding: '24px 0' }}>
+                <p className="text-gray-500" style={{ color: 'var(--text-muted)', marginBottom: '12px' }}>
+                  Make conscious swaps when logging activities to see this chart!
+                  <br /><br />
+                  <span style={{ fontSize: '0.85rem' }}>When you log a transport activity and tap 'Yes, I considered this', the CO₂ you avoided is tracked here.</span>
+                </p>
+                <button onClick={() => navigate('/log')} className="btn btn-primary" type="button">
+                  + Log an Activity
+                </button>
               </div>
             ) : (
               <div className="chart-wrap">

@@ -10,8 +10,9 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from services.calculator import calculate_co2e, city_distance
+from services.calculator import calculate_co2e, city_distance, get_all_factors
 from services.llm import generate_json, sanitize
+import re
 from services.prompts import alternative_suggestion_prompt
 
 logger = logging.getLogger(__name__)
@@ -19,6 +20,9 @@ router = APIRouter(prefix="/api/v1/activities", tags=["activities"])
 
 
 # ── Request / Response Models ─────────────────────────────────────────────────
+
+class NaturalInputBody(BaseModel):
+    text: str = Field(..., examples=["I drove 18 km to office and had chicken biryani for lunch"])
 
 class CalculateRequest(BaseModel):
     category: str = Field(..., examples=["transport"])
@@ -129,3 +133,60 @@ async def suggest_alternative(req: SuggestRequest) -> SuggestResponse:
         co2_saving_kg=float(result.get("co2_saving_kg", 0.0)),
         is_positive_reinforcement=bool(result.get("is_positive_reinforcement", False)),
     )
+
+
+@router.post("/parse-natural")
+async def parse_natural(body: NaturalInputBody):
+    """
+    Parse a natural language description into carbon-emitting activities.
+    """
+    factors = get_all_factors()
+    valid_categories = list(factors.keys())
+    valid_activities = []
+    for cat in factors.values():
+        valid_activities.extend(cat.keys())
+
+    prompt = f"""Parse the following description into carbon-emitting activities.
+Return ONLY a valid JSON object with an "items" array, no other text or explanation.
+
+Valid categories: {', '.join(valid_categories)}
+Valid activity_type values: {', '.join(valid_activities)}
+
+Description: "{sanitize(body.text, max_len=1000)}"
+
+Return format:
+{{
+  "items": [
+    {{
+      "description": "human readable label",
+      "category": "transport",
+      "activity_type": "car_petrol",
+      "quantity": 18,
+      "unit": "km"
+    }}
+  ]
+}}
+If nothing carbon-relevant, return {{"items": []}}.
+Be conservative — only extract what is clearly stated."""
+
+    try:
+        result = await generate_json(prompt)
+    except Exception as e:
+        logger.error("Gemini parse failed: %s", str(e))
+        raise HTTPException(status_code=502, detail="Failed to parse activities. Please try again.") from e
+
+    items = result.get("items", [])
+
+    # Add CO2e calculations
+    for item in items:
+        try:
+            item["co2e_kg"] = calculate_co2e(
+                item["category"],
+                item["activity_type"],
+                item["quantity"],
+                item["unit"]
+            )
+        except Exception:
+            item["co2e_kg"] = 0.0
+
+    return {"items": items}

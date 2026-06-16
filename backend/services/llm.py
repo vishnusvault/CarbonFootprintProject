@@ -66,3 +66,30 @@ async def generate_json(prompt: str) -> dict[str, Any]:
     except Exception as e:
         logger.error("Gemini API error: %s", str(e))
         raise
+
+async def generate_json_with_image(prompt: str, image_bytes: bytes, mime_type: str) -> dict[str, Any]:
+    """
+    Send a prompt with an image to Gemini and parse the JSON response.
+    """
+    try:
+        response = _client.models.generate_content(
+            model=GEMINI_LLM_MODEL,
+            contents=[
+                types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                prompt
+            ],
+            config=_GEN_CONFIG,
+        )
+        raw = response.text.strip()
+
+        # Strip markdown code fences if Gemini wraps JSON in them
+        raw = re.sub(r"^```(?:json)?\s*", "", raw)
+        raw = re.sub(r"\s*```$", "", raw)
+
+        return json.loads(raw)
+    except json.JSONDecodeError as e:
+        logger.error("Gemini returned non-JSON response: %s", str(e))
+        raise ValueError(f"LLM returned non-JSON output: {e}") from e
+    except Exception as e:
+        logger.error("Gemini API error (Vision): %s", str(e))
+        raise

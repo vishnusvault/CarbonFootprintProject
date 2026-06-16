@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
+import BudgetRing from '../components/BudgetRing';
 import {
   getActivities,
   getTodayActivities,
@@ -15,7 +16,9 @@ import {
   getMonthActivities,
   getTimeframe,
   saveTimeframe,
+  deleteActivity,
 } from '../lib/localStorage';
+import { getDisplayName } from '../lib/activityDisplayNames';
 import type { Activity } from '../lib/api';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -30,29 +33,6 @@ const CATEGORY_ICONS: Record<string, string> = {
   energy: '⚡',
   food: '🥗',
   purchase: '🛍',
-};
-
-const ACTIVITY_NAMES: Record<string, string> = {
-  car_petrol: 'Petrol Car',
-  car_diesel: 'Diesel Car',
-  car_ev: 'Electric Car',
-  flight_short: 'Short Flight',
-  flight_long: 'Long Flight',
-  bus: 'Bus',
-  metro: 'Metro',
-  train: 'Train',
-  electricity_IN: 'Electricity (India)',
-  electricity_EU: 'Electricity (EU)',
-  electricity_US: 'Electricity (US)',
-  lpg: 'LPG/Gas',
-  generator: 'Generator',
-  meal_meat_heavy: 'Meat-heavy Meal',
-  meal_mixed: 'Mixed Meal',
-  meal_vegetarian: 'Vegetarian Meal',
-  meal_vegan: 'Vegan Meal',
-  electronics_small: 'Small Electronics',
-  electronics_large: 'Large Electronics',
-  clothing: 'Clothing',
 };
 
 type Timeframe = 'daily' | 'weekly' | 'monthly';
@@ -123,6 +103,13 @@ export default function Dashboard() {
     saveTimeframe(tf);
   }
 
+  function handleDelete(id: string) {
+    if (window.confirm('Delete this activity?')) {
+      deleteActivity(id);
+      loadData();
+    }
+  }
+
   const total = activities.reduce((s, a) => s + a.co2e_kg, 0);
   const delta = prevTotal > 0 ? ((total - prevTotal) / prevTotal) * 100 : 0;
   const categoryData = buildCategoryData(activities);
@@ -133,11 +120,22 @@ export default function Dashboard() {
   const recent = [...activities].sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 5);
 
   // Benchmark (daily equivalent)
-  const daysInPeriod = timeframe === 'daily' ? 1 : timeframe === 'weekly' ? 7 : 30;
-  const dailyAvg = daysInPeriod > 0 ? total / daysInPeriod : 0;
-  const indiaAvg = 5.2;
-  const globalAvg = 12.9;
-  const indiaPercent = Math.min((dailyAvg / (globalAvg * 1.5)) * 100, 100);
+  const benchmarks = {
+    daily:   { india: 5.2,  global: 12.9 },
+    weekly:  { india: 36.4, global: 90.3 },
+    monthly: { india: 158,  global: 392  },
+  };
+
+  const labels = {
+    daily:   "vs Daily Averages",
+    weekly:  "vs Weekly Averages",
+    monthly: "vs Monthly Averages",
+  };
+
+  const indiaAvg = benchmarks[timeframe].india;
+  const globalAvg = benchmarks[timeframe].global;
+  
+  const indiaPercent = Math.min((total / (globalAvg * 1.5)) * 100, 100);
   const indiaRefPercent = Math.min((indiaAvg / (globalAvg * 1.5)) * 100, 100);
   const globalRefPercent = Math.min((globalAvg / (globalAvg * 1.5)) * 100, 100);
 
@@ -227,6 +225,8 @@ export default function Dashboard() {
             </div>
           )}
 
+      <BudgetRing />
+
           {/* Biggest contributor */}
           {biggest && (
             <div className="section">
@@ -236,7 +236,7 @@ export default function Dashboard() {
                   <span style={{ fontSize: '1.6rem' }}>{CATEGORY_ICONS[biggest.category]}</span>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>
-                      {ACTIVITY_NAMES[biggest.activity_type] ?? biggest.activity_type}
+                      {getDisplayName(biggest.activity_type)}
                     </div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{biggest.date}</div>
                   </div>
@@ -250,17 +250,17 @@ export default function Dashboard() {
 
           {/* Benchmarks */}
           <div className="section">
-            <div className="section-title">Benchmark (daily avg)</div>
+            <div className="section-title">Benchmark ({labels[timeframe]})</div>
             <div className="stack">
               <div className="benchmark">
-                <span className="benchmark-label">Your avg</span>
+                <span className="benchmark-label">Your total this {timeframe === 'daily' ? 'day' : timeframe.replace('ly', '')}</span>
                 <div className="benchmark-bar-wrap">
                   <div
                     className="benchmark-bar"
                     style={{ width: `${indiaPercent}%`, background: 'var(--green-600)' }}
                   />
                 </div>
-                <span className="benchmark-value">{dailyAvg.toFixed(1)} kg</span>
+                <span className="benchmark-value">{total.toFixed(1)} kg</span>
               </div>
               <div className="benchmark">
                 <span className="benchmark-label">India avg</span>
@@ -284,7 +284,7 @@ export default function Dashboard() {
               </div>
             </div>
             <p className="form-hint" style={{ marginTop: 8 }}>
-              India avg: 5.2 kg/day · Global avg: 12.9 kg/day (World Bank 2023)
+              India avg: {indiaAvg} kg · Global avg: {globalAvg} kg (World Bank 2023)
             </p>
           </div>
 
@@ -297,7 +297,7 @@ export default function Dashboard() {
                   <div className="activity-icon">{CATEGORY_ICONS[a.category]}</div>
                   <div className="activity-info">
                     <div className="activity-name">
-                      {ACTIVITY_NAMES[a.activity_type] ?? a.activity_type}
+                      {getDisplayName(a.activity_type)}
                       {a.conscious_swap && (
                         <span className="conscious-badge" style={{ marginLeft: 6 }}>♻️ conscious</span>
                       )}
@@ -307,7 +307,16 @@ export default function Dashboard() {
                       {a.origin && a.destination ? ` · ${a.origin} → ${a.destination}` : ` · ${a.quantity} ${a.unit}`}
                     </div>
                   </div>
-                  <div className="activity-co2">{a.co2e_kg.toFixed(2)} kg</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div className="activity-co2">{a.co2e_kg.toFixed(2)} kg</div>
+                    <button 
+                      onClick={() => handleDelete(a.id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', fontSize: '1rem', opacity: 0.5 }}
+                      aria-label="Delete activity"
+                    >
+                      🗑
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
