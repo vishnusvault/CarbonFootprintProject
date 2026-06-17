@@ -23,5 +23,5 @@ RAG_DB_PATH: str = os.getenv("RAG_DB_PATH", "/app/rag/db")
 CORS_ORIGIN: str = os.getenv("CORS_ORIGIN", "http://localhost:5173")
 
 # --- Gemini Models ---
-GEMINI_LLM_MODEL: str = "gemini-3.5-flash"
+GEMINI_LLM_MODEL: str = "gemini-2.0-flash"
 GEMINI_EMBEDDING_MODEL: str = "gemini-embedding-001"
