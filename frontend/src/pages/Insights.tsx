@@ -210,8 +210,25 @@ function InsightsTab() {
       if (!profile) throw new Error('Profile not found. Please complete onboarding.');
       const summary: Record<string, number> = {};
       for (const a of weekActivities) summary[a.activity_type] = (summary[a.activity_type] ?? 0) + a.co2e_kg;
+
+      // Check cache first — key on total CO2e + activity count to invalidate when data changes
+      const cacheKey = `insights_cache_${totalCO2.toFixed(1)}_${weekActivities.length}`;
+      const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+      try {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          const { data, ts } = JSON.parse(cached);
+          if (Date.now() - ts < CACHE_TTL) {
+            setInsights(data);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch { /* ignore */ }
+
       const result = await generateInsights(summary, profile);
       setInsights(result);
+      try { localStorage.setItem(cacheKey, JSON.stringify({ data: result, ts: Date.now() })); } catch { /* ignore */ }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate insights. Please try again.');
     } finally {

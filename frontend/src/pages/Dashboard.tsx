@@ -193,7 +193,7 @@ export default function Dashboard() {
             <div className="card section">
               <div className="section-title">By Category</div>
               <div className="chart-wrap">
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer key={timeframe} width="100%" height={200}>
                   <PieChart>
                     <Pie
                       data={categoryData}

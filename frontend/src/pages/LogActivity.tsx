@@ -162,15 +162,33 @@ export default function LogActivity() {
     }
   }
 
-  /* ── Step 4: Get suggestion (non-blocking) ── */
+  /* ── Step 4: Get suggestion (non-blocking, with 30-min cache) ── */
   async function handleGetSuggestion() {
     if (!savedActivity) return;
     setSuggestLoading(true);
     setSuggestError('');
     try {
+      // Cache key based on activity type + category
+      const cacheKey = `suggestion_cache_${savedActivity.activity_type}_${savedActivity.origin ?? ''}_${savedActivity.destination ?? ''}`;
+      const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+      try {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          const { data, ts } = JSON.parse(cached);
+          if (Date.now() - ts < CACHE_TTL) {
+            setSuggestion(data);
+            setSuggestLoading(false);
+            return;
+          }
+        }
+      } catch { /* ignore cache read errors */ }
+
       const result = await suggestAlternative(savedActivity);
-      setSuggestion({ suggestion: result.suggestion, co2_saving_kg: result.co2_saving_kg });
-    } catch (err) {
+      const data = { suggestion: result.suggestion, co2_saving_kg: result.co2_saving_kg };
+      setSuggestion(data);
+      // Store in cache
+      try { localStorage.setItem(cacheKey, JSON.stringify({ data, ts: Date.now() })); } catch { /* ignore */ }
+    } catch {
       setSuggestError('AI suggestion unavailable right now.');
     } finally {
       setSuggestLoading(false);
