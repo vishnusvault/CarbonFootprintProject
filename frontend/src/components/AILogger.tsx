@@ -5,7 +5,11 @@ import { scanReceipt, parseNatural } from '../lib/api';
 import { saveActivity } from '../lib/localStorage';
 import { getDisplayName } from '../lib/activityDisplayNames';
 
-export default function AILogger() {
+interface AILoggerProps {
+  entryDate: string;
+}
+
+export default function AILogger({ entryDate }: AILoggerProps) {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -14,7 +18,6 @@ export default function AILogger() {
   const [items, setItems] = useState<any[]>([]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [error, setError] = useState('');
-  const [entryDate, setEntryDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
 
   async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -134,23 +137,9 @@ export default function AILogger() {
         )}
 
         {items.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, margin: '16px 0', padding: '0 8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontWeight: 600 }}>Date:</span>
-              <input 
-                type="date" 
-                className="form-input" 
-                style={{ width: 'auto', padding: '4px 8px' }}
-                min={new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().split('T')[0]}
-                max={new Date().toISOString().split('T')[0]}
-                value={entryDate}
-                onChange={(e) => setEntryDate(e.target.value)}
-              />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontWeight: 600 }}>Total CO₂e:</span>
-              <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--green-700)' }}>{totalCO2.toFixed(1)} kg</span>
-            </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '16px 0', padding: '0 8px' }}>
+            <span style={{ fontWeight: 600 }}>Date: <strong>{entryDate}</strong></span>
+            <span style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--green-700)' }}>{totalCO2.toFixed(1)} kg CO₂e</span>
           </div>
         )}
 

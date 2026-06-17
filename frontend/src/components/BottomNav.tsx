@@ -1,12 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { Home, PlusCircle, Sparkles, TrendingUp, Leaf } from 'lucide-react';
+import { Home, PlusCircle, Sparkles, TrendingUp, Bot } from 'lucide-react';
 
 const navItems = [
   { to: '/', icon: Home, label: 'Home' },
   { to: '/log', icon: PlusCircle, label: 'Log' },
   { to: '/insights', icon: Sparkles, label: 'Insights' },
   { to: '/trends', icon: TrendingUp, label: 'Trends' },
-  { to: '/journey', icon: Leaf, label: 'Journey' },
+  { to: '/ask', icon: Bot, label: 'Ask Leo' },
 ];
 
 export default function BottomNav() {

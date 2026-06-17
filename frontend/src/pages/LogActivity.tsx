@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Check, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, Loader2, Save } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import AILogger from '../components/AILogger';
 import { calculateCO2e, suggestAlternative, getCities } from '../lib/api';
@@ -15,10 +15,10 @@ interface ActivityOption {
   value: string;
   label: string;
   unit: string;
-  isRoute?: boolean; // uses origin/destination instead of quantity
+  isRoute?: boolean;
 }
 
-const CATEGORIES: { value: Category; icon: string; label: string }[] = [
+const CATEGORIES_FIXED: { value: Category; icon: string; label: string }[] = [
   { value: 'transport', icon: '🚗', label: 'Transport' },
   { value: 'energy', icon: '⚡', label: 'Energy' },
   { value: 'food', icon: '🥗', label: 'Food' },
@@ -76,6 +76,9 @@ const ACTIVITY_OPTIONS: Record<Category, ActivityOption[]> = {
   ],
 };
 
+const TODAY = new Date().toISOString().split('T')[0];
+const ONE_YEAR_AGO = new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().split('T')[0];
+
 /* ──────────────────────── Component ──────────────────── */
 
 export default function LogActivity() {
@@ -83,25 +86,25 @@ export default function LogActivity() {
   const [step, setStep] = useState(0);
   const totalSteps = 6;
 
-  // Step 1
+  // Step 0: date + category
+  const [entryDate, setEntryDate] = useState<string>(TODAY);
   const [category, setCategory] = useState<Category | null>(null);
-  // Step 2
+  // Step 1
   const [activityType, setActivityType] = useState<ActivityOption | null>(null);
-  // Step 3
+  // Step 2
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
   const [quantity, setQuantity] = useState('');
   const [cities, setCities] = useState<string[]>([]);
   const [cityOriginFilter, setCityOriginFilter] = useState('');
   const [cityDestFilter, setCityDestFilter] = useState('');
-  // Step 4
+  // Step 3 (confirm + calculate)
   const [co2Result, setCo2Result] = useState<number | null>(null);
   const [distanceKm, setDistanceKm] = useState<number | null>(null);
   const [calcLoading, setCalcLoading] = useState(false);
   const [calcError, setCalcError] = useState('');
   const [savedActivity, setSavedActivity] = useState<Activity | null>(null);
-  const [entryDate, setEntryDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
-  // Step 5
+  // Step 4 (suggestion)
   const [suggestion, setSuggestion] = useState<{ suggestion: string; co2_saving_kg: number } | null>(null);
   const [suggestLoading, setSuggestLoading] = useState(false);
   const [suggestError, setSuggestError] = useState('');
@@ -119,7 +122,7 @@ export default function LogActivity() {
   function goNext() { setStep((s) => Math.min(s + 1, totalSteps - 1)); }
   function goBack() { setStep((s) => Math.max(s - 1, 0)); }
 
-  /* ── Step 4: Calculate CO2 ── */
+  /* ── Step 3: Calculate CO2 ── */
   async function handleCalculate() {
     if (!category || !activityType) return;
     setCalcLoading(true);
@@ -137,7 +140,7 @@ export default function LogActivity() {
       setCo2Result(result.co2e_kg);
       setDistanceKm(result.distance_km ?? null);
 
-      // Save activity
+      // Build activity object
       const act: Activity = {
         id: uuidv4(),
         date: entryDate,
@@ -151,8 +154,7 @@ export default function LogActivity() {
         ...(activityType.isRoute ? { origin, destination, distance_km: result.distance_km } : {}),
       };
       setSavedActivity(act);
-      setSavedActivity(act);
-      goNext();
+      goNext(); // move to step 4 (result + suggestion)
     } catch (err) {
       setCalcError(err instanceof Error ? err.message : 'Failed to calculate. Please try again.');
     } finally {
@@ -160,7 +162,7 @@ export default function LogActivity() {
     }
   }
 
-  /* ── Step 5: Get suggestion ── */
+  /* ── Step 4: Get suggestion (non-blocking) ── */
   async function handleGetSuggestion() {
     if (!savedActivity) return;
     setSuggestLoading(true);
@@ -169,7 +171,7 @@ export default function LogActivity() {
       const result = await suggestAlternative(savedActivity);
       setSuggestion({ suggestion: result.suggestion, co2_saving_kg: result.co2_saving_kg });
     } catch (err) {
-      setSuggestError(err instanceof Error ? err.message : 'Could not load suggestion.');
+      setSuggestError('AI suggestion unavailable right now.');
     } finally {
       setSuggestLoading(false);
     }
@@ -193,7 +195,7 @@ export default function LogActivity() {
     goNext();
   }
 
-  function handleDismiss() {
+  function handleSaveAndContinue() {
     if (!savedActivity) return;
     saveActivity(savedActivity);
     goNext();
@@ -224,12 +226,28 @@ export default function LogActivity() {
         ))}
       </div>
 
-      {/* ── Step 0: Category ── */}
+      {/* ── Step 0: Date + Category ── */}
       {step === 0 && (
         <div className="stack">
+          {/* Date picker at the top */}
+          <div className="card" style={{ padding: '14px 16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span className="form-label" style={{ marginBottom: 0 }}>📅 Activity Date</span>
+              <input
+                type="date"
+                className="form-input"
+                style={{ width: 'auto', padding: '4px 8px' }}
+                min={ONE_YEAR_AGO}
+                max={TODAY}
+                value={entryDate}
+                onChange={(e) => setEntryDate(e.target.value)}
+              />
+            </div>
+          </div>
+
           <p style={{ fontWeight: 600, marginBottom: 8 }}>Choose a category</p>
           <div className="cat-grid">
-            {CATEGORIES.map((c) => (
+            {CATEGORIES_FIXED.map((c) => (
               <button
                 key={c.value}
                 className={`cat-card${category === c.value ? ' selected' : ''}`}
@@ -250,8 +268,9 @@ export default function LogActivity() {
           >
             Next <ChevronRight size={18} />
           </button>
-          
-          <AILogger />
+
+          {/* AI Logger always visible on Step 0 — passes the selected date */}
+          <AILogger entryDate={entryDate} />
         </div>
       )}
 
@@ -350,7 +369,7 @@ export default function LogActivity() {
           ) : (
             <div className="form-group">
               <label className="form-label">
-                Quantity {activityType.unit === 'meal' || activityType.unit === 'item' ? '' : `(${activityType.unit})`}
+                Quantity ({activityType.unit})
               </label>
               <input
                 className="form-input"
@@ -388,6 +407,10 @@ export default function LogActivity() {
           <div className="card">
             <div className="stack">
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span className="form-label">Date</span>
+                <span>{entryDate}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span className="form-label">Category</span>
                 <span>{category}</span>
               </div>
@@ -406,18 +429,6 @@ export default function LogActivity() {
                   <span>{quantity} {activityType.unit}</span>
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, borderTop: '1px solid var(--border-light)', paddingTop: 12 }}>
-                <span className="form-label" style={{ marginBottom: 0 }}>Date</span>
-                <input 
-                  type="date" 
-                  className="form-input" 
-                  style={{ width: 'auto', padding: '4px 8px' }}
-                  min={new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString().split('T')[0]}
-                  max={new Date().toISOString().split('T')[0]}
-                  value={entryDate}
-                  onChange={(e) => setEntryDate(e.target.value)}
-                />
-              </div>
             </div>
           </div>
 
@@ -450,7 +461,7 @@ export default function LogActivity() {
         </div>
       )}
 
-      {/* ── Step 4: Result & Suggestion ── */}
+      {/* ── Step 4: Result + Suggestion ── */}
       {step === 4 && (
         <div className="stack">
           {co2Result !== null && (
@@ -476,10 +487,7 @@ export default function LogActivity() {
             </div>
           )}
 
-          {suggestError && (
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>{suggestError}</p>
-          )}
-
+          {/* Suggestion card — shown when suggestion loads successfully */}
           {suggestion && !suggestLoading && (
             <div className="suggestion-card">
               <div className="suggestion-header">
@@ -495,10 +503,28 @@ export default function LogActivity() {
                 <button className="btn btn-primary btn-sm" onClick={handleConsciousSwap} type="button">
                   <Check size={15} /> Yes, I considered this ✓
                 </button>
-                <button className="btn btn-ghost btn-sm" onClick={handleDismiss} type="button">
-                  Dismiss
+                <button className="btn btn-ghost btn-sm" onClick={handleSaveAndContinue} type="button">
+                  Dismiss & Save
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* Fallback when suggestion fails — always show a Save button */}
+          {!suggestLoading && !suggestion && (
+            <div className="card" style={{ textAlign: 'center', padding: '20px' }}>
+              {suggestError && (
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 16 }}>
+                  ℹ️ {suggestError}
+                </p>
+              )}
+              <button
+                className="btn btn-primary btn-full"
+                onClick={handleSaveAndContinue}
+                type="button"
+              >
+                <Save size={18} /> Save Activity
+              </button>
             </div>
           )}
         </div>
@@ -510,7 +536,7 @@ export default function LogActivity() {
           <div style={{ fontSize: '4rem', marginBottom: '16px' }}>✅</div>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--green-800)' }}>Activity Logged!</h2>
           <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
-            <strong>{activityType?.label}</strong> — {savedActivity.co2e_kg.toFixed(2)} kg CO₂e saved
+            <strong>{activityType?.label}</strong> — {savedActivity.co2e_kg.toFixed(2)} kg CO₂e on {savedActivity.date}
           </p>
           <button onClick={() => navigate('/')} className="btn btn-primary btn-full btn-lg" type="button" style={{ marginBottom: 12 }}>
             View Dashboard
@@ -526,6 +552,7 @@ export default function LogActivity() {
             setDistanceKm(null);
             setSavedActivity(null);
             setSuggestion(null);
+            setSuggestError('');
           }} className="btn btn-ghost btn-full" type="button">
             Log Another Activity
           </button>
