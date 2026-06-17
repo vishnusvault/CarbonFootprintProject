@@ -1,7 +1,15 @@
 """
 CarbonLens — Insights Router
-POST /api/v1/insights/generate — Gemini + RAG personalised insights
+
+Endpoints:
+  POST /api/v1/insights/generate — Generate personalised weekly AI insights.
+      Takes a summary of the user's week activities + profile, retrieves relevant
+      RAG climate context, and returns a structured JSON insight report via Gemini.
+      Response includes: summary paragraph, 3 ranked suggestions, climate fact, sources.
+
+All profile fields (country, diet, transport) are sanitised before prompt injection.
 """
+
 import logging
 from typing import Any
 
@@ -29,7 +37,9 @@ class Profile(BaseModel):
 
 
 class InsightsRequest(BaseModel):
-    activity_summary: dict[str, Any]   # flexible: accepts flat {activity_type: co2e_kg} or structured
+    activity_summary: dict[
+        str, Any
+    ]  # flexible: accepts flat {activity_type: co2e_kg} or structured
     profile: Profile
     rag_chunks: list[str] = Field(default_factory=list)
 
@@ -53,10 +63,17 @@ async def generate_insights(req: InsightsRequest) -> InsightsResponse:
     transport = sanitize(req.profile.primary_transport, max_len=50)
 
     import json
-    activity_summary_json = json.dumps(req.activity_summary, indent=2)
-    rag_context = "\n\n".join(req.rag_chunks) if req.rag_chunks else "No specific context available."
 
-    prompt = insights_prompt(activity_summary_json, rag_context, country, diet, transport)
+    activity_summary_json = json.dumps(req.activity_summary, indent=2)
+    rag_context = (
+        "\n\n".join(req.rag_chunks)
+        if req.rag_chunks
+        else "No specific context available."
+    )
+
+    prompt = insights_prompt(
+        activity_summary_json, rag_context, country, diet, transport
+    )
 
     try:
         result = await generate_json(prompt)
@@ -66,15 +83,22 @@ async def generate_insights(req: InsightsRequest) -> InsightsResponse:
         if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
             raise HTTPException(
                 status_code=503,
-                detail="Gemini API quota reached. Please wait a minute and try again."
+                detail="Gemini API quota reached. Please wait a minute and try again.",
             ) from e
-        raise HTTPException(status_code=502, detail="AI insights unavailable. Please try again.") from e
+        raise HTTPException(
+            status_code=502, detail="AI insights unavailable. Please try again."
+        ) from e
 
     raw_sources = result.get("sources", [])
     sources_list = []
     for src in raw_sources:
         if isinstance(src, dict):
-            sources_list.append({"doc": str(src.get("doc", "Source")), "excerpt": str(src.get("excerpt", ""))})
+            sources_list.append(
+                {
+                    "doc": str(src.get("doc", "Source")),
+                    "excerpt": str(src.get("excerpt", "")),
+                }
+            )
         elif isinstance(src, str):
             sources_list.append({"doc": "Source", "excerpt": src})
 

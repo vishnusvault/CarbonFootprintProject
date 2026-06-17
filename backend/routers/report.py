@@ -1,7 +1,15 @@
 """
 CarbonLens — Weekly Report Router
-POST /api/v1/report/weekly — Gemini-generated weekly digest
+
+Endpoints:
+  POST /api/v1/report/weekly — Generate a structured weekly carbon digest.
+      Compares this week's activities against a 4-week rolling baseline.
+      Returns wins (lower-carbon choices), opportunities (top emitters),
+      a week-in-a-number summary, and an equivalence metaphor.
+
+Uses Gemini 2.5 Flash with JSON-mode output for consistent structure.
 """
+
 import json
 import logging
 from typing import Any
@@ -17,7 +25,9 @@ router = APIRouter(prefix="/api/v1/report", tags=["report"])
 
 
 class WeeklyReportRequest(BaseModel):
-    activities: list[dict[str, Any]] = Field(..., description="This week's activity log")
+    activities: list[dict[str, Any]] = Field(
+        ..., description="This week's activity log"
+    )
     baseline_activities: list[dict[str, Any]] = Field(
         default_factory=list,
         description="Baseline activities (4-week avg) or empty for global avg",
@@ -41,8 +51,14 @@ async def weekly_report(req: WeeklyReportRequest) -> WeeklyReportResponse:
     Generate a weekly carbon footprint digest using Gemini.
     """
     this_week_json = json.dumps(req.activities, indent=2)
-    baseline_json = json.dumps(req.baseline_activities, indent=2) if req.baseline_activities else "No baseline — using global average (77 kg CO2e/week)"
-    suggestions_shown = "\n".join(req.suggestions_shown) if req.suggestions_shown else "None shown yet."
+    baseline_json = (
+        json.dumps(req.baseline_activities, indent=2)
+        if req.baseline_activities
+        else "No baseline — using global average (77 kg CO2e/week)"
+    )
+    suggestions_shown = (
+        "\n".join(req.suggestions_shown) if req.suggestions_shown else "None shown yet."
+    )
 
     prompt = weekly_report_prompt(this_week_json, baseline_json, suggestions_shown)
 
@@ -50,7 +66,9 @@ async def weekly_report(req: WeeklyReportRequest) -> WeeklyReportResponse:
         result = await generate_json(prompt)
     except Exception as e:
         logger.error("Gemini weekly report failed: %s", str(e))
-        raise HTTPException(status_code=502, detail="Weekly report generation unavailable.") from e
+        raise HTTPException(
+            status_code=502, detail="Weekly report generation unavailable."
+        ) from e
 
     return WeeklyReportResponse(
         wins=result.get("wins", []),

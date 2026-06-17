@@ -3,6 +3,7 @@ CarbonLens — Central Configuration
 Reads all settings from environment variables.
 Never hardcodes secrets.
 """
+
 import os
 from dotenv import load_dotenv
 

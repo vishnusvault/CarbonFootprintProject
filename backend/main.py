@@ -3,8 +3,8 @@ CarbonLens — FastAPI Application Entry Point
 Mounts all routers, serves React static files, configures CORS.
 CORS restricted to CORS_ORIGIN env var — never '*' in production.
 """
+
 import logging
-import os
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -52,15 +52,25 @@ app.include_router(report.router)
 app.include_router(rag_router.router)
 app.include_router(scan.router)
 
+
+@app.get("/api/v1/health", tags=["health"])
+async def health_check() -> dict:
+    """Health check endpoint — returns status ok when the service is running."""
+    return {"status": "ok", "version": "1.0.0"}
+
+
 # ── Static Files (React SPA) ──────────────────────────────────────────────────
 STATIC_DIR = Path(__file__).parent / "static"
 if STATIC_DIR.exists():
-    app.mount("/assets", StaticFiles(directory=str(STATIC_DIR / "assets")), name="assets")
+    app.mount(
+        "/assets", StaticFiles(directory=str(STATIC_DIR / "assets")), name="assets"
+    )
 
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_spa(full_path: str) -> FileResponse:
         """Serve the React SPA for all non-API routes (client-side routing)."""
         index = STATIC_DIR / "index.html"
         return FileResponse(str(index))
+
 
 logger.info("CarbonLens API starting — env=%s, cors=%s", APP_ENV, allowed_origins)

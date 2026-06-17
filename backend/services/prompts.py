@@ -28,7 +28,9 @@ Respond ONLY in valid JSON with exactly these keys:
 {{"suggestion": "string", "co2_saving_kg": 0.0, "is_positive_reinforcement": false}}"""
 
 
-def insights_prompt(activity_summary: str, rag_chunks: str, country: str, diet: str, transport: str) -> str:
+def insights_prompt(
+    activity_summary: str, rag_chunks: str, country: str, diet: str, transport: str
+) -> str:
     return f"""You are CarbonLens. Generate personalised carbon footprint insights for this user.
 Use ONLY the climate context provided. Be specific — cite numbers from the context.
 
@@ -50,7 +52,9 @@ Respond ONLY in valid JSON with exactly these keys:
 }}"""
 
 
-def weekly_report_prompt(this_week_json: str, baseline_json: str, suggestions_shown: str) -> str:
+def weekly_report_prompt(
+    this_week_json: str, baseline_json: str, suggestions_shown: str
+) -> str:
     return f"""You are CarbonLens. Generate a weekly carbon footprint digest.
 Be specific, positive, and non-judgmental. Never assign scores or grades.
 

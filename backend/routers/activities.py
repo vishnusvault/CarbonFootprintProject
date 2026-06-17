@@ -1,8 +1,18 @@
 """
 CarbonLens — Activities Router
-POST /api/v1/activities/calculate   — compute CO2e for an activity
-POST /api/v1/activities/suggest-alternative — Gemini-powered alternative suggestion
+
+Handles all activity-related API endpoints:
+  POST /api/v1/activities/calculate          — Compute CO₂e emissions for an activity.
+      Uses IPCC/DEFRA/IEA emission factors from emission_factors.json.
+      Supports route-based transport (haversine distance) and quantity-based inputs.
+  POST /api/v1/activities/suggest-alternative — Gemini-powered lower-carbon alternative.
+      Grounds suggestions in RAG climate context for factual accuracy.
+  POST /api/v1/activities/parse-natural       — Natural language → structured activities.
+      e.g. "I drove 20km to work" → [{category: transport, activity_type: car_petrol, ...}]
+
+All user-supplied string fields are sanitised before LLM prompt injection.
 """
+
 import json
 import logging
 from typing import Optional
@@ -12,7 +22,6 @@ from pydantic import BaseModel, Field
 
 from services.calculator import calculate_co2e, city_distance, get_all_factors
 from services.llm import generate_json, sanitize
-import re
 from services.prompts import alternative_suggestion_prompt
 
 logger = logging.getLogger(__name__)
@@ -21,8 +30,12 @@ router = APIRouter(prefix="/api/v1/activities", tags=["activities"])
 
 # ── Request / Response Models ─────────────────────────────────────────────────
 
+
 class NaturalInputBody(BaseModel):
-    text: str = Field(..., examples=["I drove 18 km to office and had chicken biryani for lunch"])
+    text: str = Field(
+        ..., examples=["I drove 18 km to office and had chicken biryani for lunch"]
+    )
+
 
 class CalculateRequest(BaseModel):
     category: str = Field(..., examples=["transport"])
@@ -41,6 +54,7 @@ class CalculateResponse(BaseModel):
 
 class ActivityPayload(BaseModel):
     """Full activity object sent by frontend after saving."""
+
     id: str
     date: str
     category: str
@@ -69,6 +83,7 @@ class SuggestResponse(BaseModel):
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
+
 
 @router.post("/calculate", response_model=CalculateResponse)
 async def calculate(req: CalculateRequest) -> CalculateResponse:
@@ -112,7 +127,11 @@ async def suggest_alternative(req: SuggestRequest) -> SuggestResponse:
             safe_activity[field] = sanitize(str(safe_activity[field]), max_len=200)
 
     activity_json = json.dumps(safe_activity, indent=2)
-    rag_context = "\n\n".join(req.rag_chunks) if req.rag_chunks else "No specific context available."
+    rag_context = (
+        "\n\n".join(req.rag_chunks)
+        if req.rag_chunks
+        else "No specific context available."
+    )
 
     prompt = alternative_suggestion_prompt(activity_json, rag_context)
 
@@ -124,9 +143,11 @@ async def suggest_alternative(req: SuggestRequest) -> SuggestResponse:
         if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
             raise HTTPException(
                 status_code=503,
-                detail="Gemini API quota reached. Please wait a minute and try again."
+                detail="Gemini API quota reached. Please wait a minute and try again.",
             ) from e
-        raise HTTPException(status_code=502, detail="AI suggestion unavailable. Please try again.") from e
+        raise HTTPException(
+            status_code=502, detail="AI suggestion unavailable. Please try again."
+        ) from e
 
     return SuggestResponse(
         suggestion=result.get("suggestion", ""),
@@ -149,8 +170,8 @@ async def parse_natural(body: NaturalInputBody):
     prompt = f"""Parse the following description into carbon-emitting activities.
 Return ONLY a valid JSON object with an "items" array, no other text or explanation.
 
-Valid categories: {', '.join(valid_categories)}
-Valid activity_type values: {', '.join(valid_activities)}
+Valid categories: {", ".join(valid_categories)}
+Valid activity_type values: {", ".join(valid_activities)}
 
 Description: "{sanitize(body.text, max_len=1000)}"
 
@@ -173,7 +194,9 @@ Be conservative — only extract what is clearly stated."""
         result = await generate_json(prompt)
     except Exception as e:
         logger.error("Gemini parse failed: %s", str(e))
-        raise HTTPException(status_code=502, detail="Failed to parse activities. Please try again.") from e
+        raise HTTPException(
+            status_code=502, detail="Failed to parse activities. Please try again."
+        ) from e
 
     items = result.get("items", [])
 
@@ -181,10 +204,7 @@ Be conservative — only extract what is clearly stated."""
     for item in items:
         try:
             item["co2e_kg"] = calculate_co2e(
-                item["category"],
-                item["activity_type"],
-                item["quantity"],
-                item["unit"]
+                item["category"], item["activity_type"], item["quantity"], item["unit"]
             )
         except Exception:
             item["co2e_kg"] = 0.0

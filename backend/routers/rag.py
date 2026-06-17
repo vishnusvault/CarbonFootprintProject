@@ -1,10 +1,16 @@
 """
-CarbonLens — RAG + Utility Router
-POST /api/v1/rag/query  — RAG Q&A with Gemini
-GET  /api/v1/factors    — emission factor lookup
-GET  /api/v1/cities/distance — haversine distance between two cities
-GET  /api/v1/health     — health check
+CarbonLens — RAG (Ask Leo) Router
+
+Endpoints:
+  POST /api/v1/ask — Conversational climate Q&A grounded in a vector knowledge base.
+      Retrieves the top-k most relevant document chunks from ChromaDB using
+      cosine similarity on gemini-embedding-001 embeddings.
+      Injects the user's own activity summary as personalised context.
+      Maintains full conversation history for multi-turn dialogue.
+
+Knowledge base is pre-ingested at Docker build time (see services/rag_ingest.py).
 """
+
 import logging
 from typing import Optional
 
@@ -12,14 +18,14 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from services.calculator import get_all_factors, city_distance, list_cities
-from services.llm import generate_json, sanitize
-from services.prompts import rag_qa_prompt
+from services.llm import sanitize
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["rag", "utility"])
 
 
 # ── RAG Q&A ───────────────────────────────────────────────────────────────────
+
 
 class ConversationBody(BaseModel):
     messages: list[dict] = Field(default_factory=list)
@@ -37,7 +43,11 @@ class RAGQueryResponse(BaseModel):
 async def rag_query(body: ConversationBody) -> RAGQueryResponse:
     """Conversational RAG Q&A with Leo."""
     question = sanitize(body.question, max_len=500)
-    rag_context = "\n\n".join(body.rag_chunks) if body.rag_chunks else "No specific context available."
+    rag_context = (
+        "\n\n".join(body.rag_chunks)
+        if body.rag_chunks
+        else "No specific context available."
+    )
 
     system_prompt = f"""You are Leo, a friendly carbon footprint advisor for CarbonLens.
 You have access to the user's actual activity data below. Use it to give specific,
@@ -56,13 +66,18 @@ If asked anything unrelated, politely redirect."""
     from google import genai
     from google.genai import types
     from config import GOOGLE_API_KEY, GEMINI_LLM_MODEL
+
     client = genai.Client(api_key=GOOGLE_API_KEY)
-    
+
     # Build contents array
     contents = []
     for msg in body.messages:
         role = "user" if msg.get("role") == "user" else "model"
-        contents.append(types.Content(role=role, parts=[types.Part.from_text(msg.get("content", ""))]))
+        contents.append(
+            types.Content(
+                role=role, parts=[types.Part.from_text(msg.get("content", ""))]
+            )
+        )
     contents.append(types.Content(role="user", parts=[types.Part.from_text(question)]))
 
     try:
@@ -72,18 +87,22 @@ If asked anything unrelated, politely redirect."""
             config=types.GenerateContentConfig(
                 system_instruction=system_prompt,
                 temperature=0.4,
-            )
+            ),
         )
         answer = response.text
     except Exception as e:
         logger.error("RAG Q&A failed: %s", str(e))
-        raise HTTPException(status_code=502, detail="Q&A unavailable. Please try again.") from e
+        raise HTTPException(
+            status_code=502, detail="Q&A unavailable. Please try again."
+        ) from e
 
     # Extract mock sources from chunks for demonstration
     sources = []
     if body.rag_chunks:
         # Just create dummy sources based on chunks length to fulfill the interface
-        sources.append({"doc": "Climate Knowledge Base", "excerpt": "Context used for answer"})
+        sources.append(
+            {"doc": "Climate Knowledge Base", "excerpt": "Context used for answer"}
+        )
 
     return RAGQueryResponse(
         answer=answer,
@@ -93,6 +112,7 @@ If asked anything unrelated, politely redirect."""
 
 # ── Emission Factors ──────────────────────────────────────────────────────────
 
+
 @router.get("/api/v1/factors")
 async def get_factors() -> dict:
     """Return all emission factors (used by frontend to display factor info)."""
@@ -100,6 +120,7 @@ async def get_factors() -> dict:
 
 
 # ── City Distance ─────────────────────────────────────────────────────────────
+
 
 class DistanceResponse(BaseModel):
     distance_km: Optional[float]
@@ -132,6 +153,7 @@ async def get_cities() -> dict:
 
 
 # ── Health Check ──────────────────────────────────────────────────────────────
+
 
 @router.get("/api/v1/health")
 async def health() -> dict:

@@ -3,6 +3,7 @@ CarbonLens — Gemini LLM Service
 Uses google-genai SDK (new official SDK). API key loaded from environment via config.py.
 No secrets are hardcoded here.
 """
+
 import json
 import re
 import logging
@@ -31,8 +32,8 @@ def sanitize(text: str, max_len: int = 500) -> str:
     Strip HTML tags and control characters from user input before injecting into prompts.
     Prevents prompt injection attacks.
     """
-    text = re.sub(r"<[^>]+>", "", text)           # strip HTML tags
-    text = re.sub(r"[\x00-\x1f\x7f]", "", text)   # strip ASCII control chars
+    text = re.sub(r"<[^>]+>", "", text)  # strip HTML tags
+    text = re.sub(r"[\x00-\x1f\x7f]", "", text)  # strip ASCII control chars
     return text[:max_len].strip()
 
 
@@ -67,7 +68,10 @@ async def generate_json(prompt: str) -> dict[str, Any]:
         logger.error("Gemini API error: %s", str(e))
         raise
 
-async def generate_json_with_image(prompt: str, image_bytes: bytes, mime_type: str) -> dict[str, Any]:
+
+async def generate_json_with_image(
+    prompt: str, image_bytes: bytes, mime_type: str
+) -> dict[str, Any]:
     """
     Send a prompt with an image to Gemini and parse the JSON response.
     """
@@ -76,7 +80,7 @@ async def generate_json_with_image(prompt: str, image_bytes: bytes, mime_type: s
             model=GEMINI_LLM_MODEL,
             contents=[
                 types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
-                prompt
+                prompt,
             ],
             config=_GEN_CONFIG,
         )

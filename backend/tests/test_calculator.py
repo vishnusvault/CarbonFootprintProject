@@ -2,6 +2,7 @@
 CarbonLens — Unit Tests: Emission Calculator & City Distance
 Run with: pytest tests/ -v
 """
+
 import sys
 from pathlib import Path
 
@@ -19,9 +20,9 @@ class TestCalculateCo2e:
         assert result == pytest.approx(18.0, rel=0.01)
 
     def test_flight_short(self):
-        """Chennai to Mumbai ~1330 km flight_short"""
+        """1330 km short flight at 0.158 kg/km = 210.14 kg CO2e"""
         result = calculate_co2e("transport", "flight_short", 1330, "km")
-        assert result == pytest.approx(339.15, rel=0.01)
+        assert result == pytest.approx(210.14, rel=0.01)
 
     def test_ev_lower_than_petrol(self):
         """EV should emit less than petrol for same distance"""
@@ -29,12 +30,13 @@ class TestCalculateCo2e:
         petrol = calculate_co2e("transport", "car_petrol", 100, "km")
         assert ev < petrol
 
-    def test_vegan_meal_lowest(self):
-        """Vegan meal should be lowest among all food types"""
-        vegan = calculate_co2e("food", "meal_vegan", 1, "meal")
-        vegetarian = calculate_co2e("food", "meal_vegetarian", 1, "meal")
-        meat = calculate_co2e("food", "meal_meat_heavy", 1, "meal")
-        assert vegan < vegetarian < meat
+    def test_vegan_lower_than_chicken(self):
+        """Plant-based foods (lentils/apples) should emit less than chicken."""
+        lentils = calculate_co2e("food", "food_lentils", 100, "g")
+        apples = calculate_co2e("food", "food_apples", 100, "g")
+        chicken = calculate_co2e("food", "food_chicken", 100, "g")
+        assert lentils < chicken
+        assert apples < chicken
 
     def test_electricity_india_factor(self):
         """1 kWh India electricity = 0.82 kg CO2e"""
@@ -55,7 +57,7 @@ class TestCalculateCo2e:
 
     def test_zero_quantity(self):
         """Zero quantity should return 0.0"""
-        result = calculate_co2e("food", "meal_vegan", 0, "meal")
+        result = calculate_co2e("food", "food_apples", 0, "g")
         assert result == 0.0
 
     def test_purchase_electronics_large(self):

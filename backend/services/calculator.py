@@ -3,6 +3,7 @@ CarbonLens — CO2e Calculator Service
 Emission factors sourced from IPCC AR6, GHG Protocol, IEA.
 All factors documented in emission_factors.json _sources key.
 """
+
 import json
 import math
 from pathlib import Path
@@ -37,7 +38,10 @@ def city_distance(origin: str, destination: str) -> Optional[float]:
 
     dlat = lat2 - lat1
     dlon = lon2 - lon1
-    a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    )
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return round(R * c, 1)
 
@@ -69,7 +73,9 @@ def calculate_co2e(
 
     activity = cat.get(activity_type)
     if activity is None:
-        raise ValueError(f"Unknown activity_type {activity_type!r} in category {category!r}")
+        raise ValueError(
+            f"Unknown activity_type {activity_type!r} in category {category!r}"
+        )
 
     factor = activity.get(unit)
     if factor is None:
