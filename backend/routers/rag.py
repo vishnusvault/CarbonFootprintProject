@@ -75,10 +75,10 @@ If asked anything unrelated, politely redirect."""
         role = "user" if msg.get("role") == "user" else "model"
         contents.append(
             types.Content(
-                role=role, parts=[types.Part.from_text(msg.get("content", ""))]
+                role=role, parts=[types.Part.from_text(text=msg.get("content", ""))]
             )
         )
-    contents.append(types.Content(role="user", parts=[types.Part.from_text(question)]))
+    contents.append(types.Content(role="user", parts=[types.Part.from_text(text=question)]))
 
     try:
         response = client.models.generate_content(
