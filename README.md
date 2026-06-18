@@ -2,7 +2,7 @@
 
 > **AI-powered personal carbon footprint tracker** — log your daily emissions, get actionable AI suggestions, and watch your habits change over time.
 
-**🚀 Live App:** [https://carbonfactors-814809066973.asia-south1.run.app](https://carbonfactors-814809066973.asia-south1.run.app)
+**🚀 Live App:** [https://carbonlens-814809066973.asia-south1.run.app](https://carbonfactors-814809066973.asia-south1.run.app)
 
 Built for **Promptwars Hackathon, June 2026** · Powered by Google Gemini 2.5 Flash · React + FastAPI · Deployed on Google Cloud Run
 
