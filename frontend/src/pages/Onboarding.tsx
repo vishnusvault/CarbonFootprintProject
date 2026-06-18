@@ -53,7 +53,7 @@ export default function Onboarding() {
     <div className="onboard-page">
       <div className="onboard-card">
         <div className="onboard-logo">🌱</div>
-        <h1 className="onboard-title">CarbonLens</h1>
+        <h1 className="onboard-title">CarbonFactors</h1>
         <p className="onboard-subtitle">Track your carbon footprint, one step at a time.</p>
 
         {/* Step dots */}

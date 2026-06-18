@@ -1,5 +1,5 @@
 /**
- * CarbonLens — API Client
+ * CarbonFactors — API Client
  * Typed fetch wrappers for all backend endpoints.
  * Base URL auto-detects: empty string in production (same origin), localhost in dev.
  */

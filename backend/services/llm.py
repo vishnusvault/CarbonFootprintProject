@@ -1,5 +1,5 @@
 """
-CarbonLens — Gemini LLM Service
+CarbonFactors — Gemini LLM Service
 Uses google-genai SDK (new official SDK). API key loaded from environment via config.py.
 No secrets are hardcoded here.
 """

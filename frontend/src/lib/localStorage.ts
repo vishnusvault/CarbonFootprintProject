@@ -1,5 +1,5 @@
 /**
- * CarbonLens — localStorage helpers
+ * CarbonFactors — localStorage helpers
  * All user data (activities + profile) lives in the browser.
  * Backend is fully stateless — it only receives data and returns computed results.
  */
@@ -7,9 +7,9 @@
 import type { Activity, Profile } from "./api";
 
 const KEYS = {
-  activities: "carbonlens_activities",
-  profile: "carbonlens_profile",
-  timeframe: "carbonlens_timeframe",
+  activities: "CarbonFactors_activities",
+  profile: "CarbonFactors_profile",
+  timeframe: "CarbonFactors_timeframe",
 } as const;
 
 // ── Activities ─────────────────────────────────────────────────────────────
@@ -27,7 +27,7 @@ export function saveActivity(activity: Activity): void {
   const activities = getActivities();
   activities.push(activity);
   localStorage.setItem(KEYS.activities, JSON.stringify(activities));
-  window.dispatchEvent(new Event('carbonlens_storage'));
+  window.dispatchEvent(new Event('CarbonFactors_storage'));
 }
 
 export function updateActivity(id: string, patch: Partial<Activity>): void {
@@ -42,7 +42,7 @@ export function updateActivity(id: string, patch: Partial<Activity>): void {
 export function deleteActivity(id: string): void {
   const activities = getActivities().filter((a) => a.id !== id);
   localStorage.setItem(KEYS.activities, JSON.stringify(activities));
-  window.dispatchEvent(new Event('carbonlens_storage'));
+  window.dispatchEvent(new Event('CarbonFactors_storage'));
 }
 
 export function getActivitiesByDateRange(from: Date, to: Date): Activity[] {

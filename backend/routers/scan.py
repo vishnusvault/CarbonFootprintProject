@@ -1,5 +1,5 @@
 """
-CarbonLens — Receipt Scanner Router
+CarbonFactors — Receipt Scanner Router
 
 Endpoints:
   POST /api/v1/scan/receipt — Extract carbon-relevant items from a receipt image.

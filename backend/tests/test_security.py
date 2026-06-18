@@ -1,5 +1,5 @@
 """
-CarbonLens — Security Unit Tests
+CarbonFactors — Security Unit Tests
 Tests input sanitisation to prevent prompt injection and XSS.
 Run with: pytest tests/test_security.py -v
 """

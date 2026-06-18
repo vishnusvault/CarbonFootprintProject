@@ -1,5 +1,5 @@
 """
-CarbonLens — Insights Router
+CarbonFactors — Insights Router
 
 Endpoints:
   POST /api/v1/insights/generate — Generate personalised weekly AI insights.

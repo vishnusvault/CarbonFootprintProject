@@ -1,5 +1,5 @@
 """
-CarbonLens — RAG (Ask Leo) Router
+CarbonFactors — RAG (Ask Leafie) Router
 
 Endpoints:
   POST /api/v1/ask — Conversational climate Q&A grounded in a vector knowledge base.
@@ -41,7 +41,7 @@ class RAGQueryResponse(BaseModel):
 
 @router.post("/api/v1/rag/query", response_model=RAGQueryResponse)
 async def rag_query(body: ConversationBody) -> RAGQueryResponse:
-    """Conversational RAG Q&A with Leo."""
+    """Conversational RAG Q&A with Leafie."""
     question = sanitize(body.question, max_len=500)
     rag_context = (
         "\n\n".join(body.rag_chunks)
@@ -49,7 +49,7 @@ async def rag_query(body: ConversationBody) -> RAGQueryResponse:
         else "No specific context available."
     )
 
-    system_prompt = f"""You are Leo, a friendly carbon footprint advisor for CarbonLens.
+    system_prompt = f"""You are Leafie, a friendly carbon footprint advisor for CarbonFactors.
 You have access to the user's actual activity data below. Use it to give specific,
 personalised answers. Back up statistics with the climate context provided.
 Keep responses concise — 2-4 sentences max unless the user asks for detail.
@@ -157,4 +157,4 @@ async def get_cities() -> dict:
 
 @router.get("/api/v1/health")
 async def health() -> dict:
-    return {"status": "ok", "version": "1.0.0", "service": "CarbonLens"}
+    return {"status": "ok", "version": "1.0.0", "service": "CarbonFactors"}

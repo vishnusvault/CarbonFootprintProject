@@ -13,10 +13,10 @@ export default function TopBar() {
     }
     
     update();
-    window.addEventListener('carbonlens_storage', update);
+    window.addEventListener('CarbonFactors_storage', update);
     window.addEventListener('storage', update);
     return () => {
-      window.removeEventListener('carbonlens_storage', update);
+      window.removeEventListener('CarbonFactors_storage', update);
       window.removeEventListener('storage', update);
     };
   }, []);
@@ -27,7 +27,7 @@ export default function TopBar() {
         <div className="topbar-logo-icon">
           <Leaf size={18} color="white" />
         </div>
-        <span className="topbar-logo-name">CarbonLens</span>
+        <span className="topbar-logo-name">CarbonFactors</span>
       </div>
       <div className="topbar-badge">
         🌍 {weekCO2.toFixed(1)} kg this week

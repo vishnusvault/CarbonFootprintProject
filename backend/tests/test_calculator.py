@@ -1,5 +1,5 @@
 """
-CarbonLens — Unit Tests: Emission Calculator & City Distance
+CarbonFactors — Unit Tests: Emission Calculator & City Distance
 Run with: pytest tests/ -v
 """
 

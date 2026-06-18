@@ -1,5 +1,5 @@
 """
-CarbonLens — FastAPI Application Entry Point
+CarbonFactors — FastAPI Application Entry Point
 Mounts all routers, serves React static files, configures CORS.
 CORS restricted to CORS_ORIGIN env var — never '*' in production.
 """
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 # ── App ───────────────────────────────────────────────────────────────────────
 app = FastAPI(
-    title="CarbonLens API",
+    title="CarbonFactors API",
     description="Personal Carbon Footprint Tracker — Powered by Google Gemini",
     version="1.0.0",
     docs_url="/docs" if APP_ENV == "development" else None,  # hide docs in production
@@ -73,4 +73,4 @@ if STATIC_DIR.exists():
         return FileResponse(str(index))
 
 
-logger.info("CarbonLens API starting — env=%s, cors=%s", APP_ENV, allowed_origins)
+logger.info("CarbonFactors API starting — env=%s, cors=%s", APP_ENV, allowed_origins)

@@ -1,8 +1,8 @@
-# 🌱 CarbonLens
+# 🌱 CarbonFactors
 
 > **AI-powered personal carbon footprint tracker** — log your daily activities, get real-time CO₂e calculations, and receive Gemini-powered suggestions to reduce your environmental impact.
 
-**Live App:** [https://carbonlens-814809066973.asia-south1.run.app](https://carbonlens-814809066973.asia-south1.run.app)
+**Live App:** [https://CarbonFactors-814809066973.asia-south1.run.app](https://CarbonFactors-814809066973.asia-south1.run.app)
 
 ---
 
@@ -15,7 +15,7 @@
 | 💬 **Natural Language Log** | Type "drove 22km to work and had biryani for lunch" — AI parses it into structured activities |
 | 💡 **Inline AI Suggestions** | After every log, Gemini suggests a lower-carbon alternative specific to what you did |
 | 📊 **AI Weekly Insights** | One-click analysis of your week — summary, 3 ranked suggestions, a climate fact, and sources |
-| 🤖 **Ask Leo** | Conversational climate chatbot grounded in a RAG knowledge base — asks are contextualised with your own activity data |
+| 🤖 **Ask Leafie** | Conversational climate chatbot grounded in a RAG knowledge base — asks are contextualised with your own activity data |
 | 🗂️ **My Journey** | Tracks total CO₂ avoided, conscious swap count, best streak, monthly trend, and equivalent metaphors |
 | 📈 **Trends** | 6-month bar chart with category filters |
 | 🎯 **Carbon Budget** | Set a monthly CO₂ budget — animated ring on dashboard shows progress |
@@ -104,7 +104,7 @@ CarbonFootprintProject/
 │   ├── routers/
 │   │   ├── activities.py        # /calculate, /suggest-alternative, /parse-natural
 │   │   ├── insights.py          # /generate — weekly AI insights
-│   │   ├── rag.py               # /ask — conversational Ask Leo endpoint
+│   │   ├── rag.py               # /ask — conversational Ask Leafie endpoint
 │   │   ├── report.py            # /weekly — weekly digest report
 │   │   └── scan.py              # /receipt — Gemini Vision receipt scanner
 │   └── services/
@@ -148,7 +148,7 @@ All AI features use **Gemini 2.5 Flash** with structured JSON output:
 
 - **Inline suggestion** — grounded in RAG context, cached 30 min per activity type
 - **AI Insights** — weekly summary, 3 ranked suggestions, climate fact with citations
-- **Ask Leo** — RAG-grounded Q&A with full conversation history + personalised context from your own activity data
+- **Ask Leafie** — RAG-grounded Q&A with full conversation history + personalised context from your own activity data
 - **Receipt Scanner** — Gemini Vision parses food/grocery images
 - **Natural Language** — "I drove 20km and had chicken for lunch" → structured activity array
 

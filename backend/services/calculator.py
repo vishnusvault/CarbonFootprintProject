@@ -1,5 +1,5 @@
 """
-CarbonLens — CO2e Calculator Service
+CarbonFactors — CO2e Calculator Service
 Emission factors sourced from IPCC AR6, GHG Protocol, IEA.
 All factors documented in emission_factors.json _sources key.
 """

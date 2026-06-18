@@ -1,5 +1,5 @@
 """
-CarbonLens — Central Configuration
+CarbonFactors — Central Configuration
 Reads all settings from environment variables.
 Never hardcodes secrets.
 """

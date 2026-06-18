@@ -6,7 +6,7 @@ const navItems = [
   { to: '/log', icon: PlusCircle, label: 'Log' },
   { to: '/insights', icon: Sparkles, label: 'Insights' },
   { to: '/trends', icon: TrendingUp, label: 'Trends' },
-  { to: '/ask', icon: Bot, label: 'Ask Leo' },
+  { to: '/ask', icon: Bot, label: 'Ask Leafie' },
 ];
 
 export default function BottomNav() {

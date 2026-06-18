@@ -1,6 +1,6 @@
-# CarbonLens — System Architecture
+# CarbonFactors — System Architecture
 
-> Full technical breakdown of the CarbonLens system: components, data flows, deployment, and AI pipeline.
+> Full technical breakdown of the CarbonFactors system: components, data flows, deployment, and AI pipeline.
 
 ---
 
@@ -23,7 +23,7 @@ graph TB
             MAIN["main.py\nFastAPI App"]
             CALC["routers/activities.py\nCO₂e Calculator\nAI Suggestions\nNatural Language Parser"]
             INSIGHTS["routers/insights.py\nWeekly AI Insights"]
-            RAG_R["routers/rag.py\nAsk Leo (Chat)"]
+            RAG_R["routers/rag.py\nAsk Leafie (Chat)"]
             REPORT["routers/report.py\nWeekly Digest"]
             SCAN["routers/scan.py\nReceipt Scanner"]
         end
@@ -59,7 +59,7 @@ graph TB
 
     subgraph GCP["Google Cloud Platform"]
         SM["Secret Manager\nGOOGLE_API_KEY"]
-        GCR["Container Registry\ngcr.io/my-planner-499611/carbonlens"]
+        GCR["Container Registry\ngcr.io/my-planner-499611/CarbonFactors"]
         CB["Cloud Build\ncloudbuild.yaml"]
     end
 
@@ -108,12 +108,12 @@ sequenceDiagram
     UI->>LS: updateActivity(conscious_swap=true)
 ```
 
-### 2. Ask Leo (RAG Chat)
+### 2. Ask Leafie (RAG Chat)
 
 ```mermaid
 sequenceDiagram
     actor User
-    participant UI as Ask Leo UI
+    participant UI as Ask Leafie UI
     participant API as FastAPI /ask
     participant DB as ChromaDB
     participant Gemini as Gemini 2.5 Flash
@@ -156,9 +156,9 @@ flowchart LR
     DEV["Developer\ngit push"] -->|"triggers"| CB["Cloud Build\ncloudbuild.yaml"]
     
     CB --> STEP0["Step 0: docker build\n• Install Python deps\n• npm install + vite build\n• Copy dist/ into container\n• RUN rag_ingest.py\n  (embeds climate docs\n  into ChromaDB)"]
-    STEP0 --> STEP1["Step 1: docker push\ngcr.io/project/carbonlens:latest"]
+    STEP0 --> STEP1["Step 1: docker push\ngcr.io/project/CarbonFactors:latest"]
     STEP1 --> STEP2["Step 2: gcloud run deploy\n• Region: asia-south1\n• Memory: 512Mi\n• Mount: google-api-key secret\n• PORT: 8080"]
-    STEP2 --> LIVE["✅ Live\ncarbonlens-*.run.app"]
+    STEP2 --> LIVE["✅ Live\nCarbonFactors-*.run.app"]
 ```
 
 ---
@@ -174,12 +174,12 @@ flowchart LR
 | `pages/LogActivity.tsx` | 6-step wizard — date + category → type → details → confirm → suggestion → done |
 | `pages/Insights.tsx` | Tabbed: AI Insights + My Journey |
 | `pages/Trends.tsx` | 6-month bar chart with category filter |
-| `pages/AskClimate.tsx` | Conversational Ask Leo UI with message history |
+| `pages/AskClimate.tsx` | Conversational Ask Leafie UI with message history |
 | `pages/Onboarding.tsx` | 3-step first-run wizard (country, transport, diet) |
 | `components/AILogger.tsx` | AI shortcut panel: receipt scan + natural language entry |
 | `components/BudgetRing.tsx` | Animated SVG ring for monthly CO₂ budget |
 | `components/TopBar.tsx` | Header with live weekly CO₂ badge |
-| `components/BottomNav.tsx` | 5-item nav: Home · Log · Insights · Trends · Ask Leo |
+| `components/BottomNav.tsx` | 5-item nav: Home · Log · Insights · Trends · Ask Leafie |
 | `lib/localStorage.ts` | All read/write helpers for activities + profile + timeframe |
 | `lib/api.ts` | Typed fetch wrappers for all backend endpoints |
 

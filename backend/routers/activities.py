@@ -1,5 +1,5 @@
 """
-CarbonLens — Activities Router
+CarbonFactors — Activities Router
 
 Handles all activity-related API endpoints:
   POST /api/v1/activities/calculate          — Compute CO₂e emissions for an activity.

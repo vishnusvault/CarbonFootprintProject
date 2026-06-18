@@ -1,5 +1,5 @@
 """
-CarbonLens — pytest Configuration
+CarbonFactors — pytest Configuration
 
 Test suite validates the core problem statement:
   "Help individuals understand and reduce their personal carbon footprint

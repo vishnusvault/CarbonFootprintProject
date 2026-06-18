@@ -89,7 +89,7 @@ export default function AskClimate() {
   return (
     <main className="page" style={{ paddingBottom: 100, display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <div style={{ flexShrink: 0 }}>
-        <h1 className="page-title">Ask Leo</h1>
+        <h1 className="page-title">Ask Leafie</h1>
         <p className="page-subtitle">Your personal AI carbon footprint advisor.</p>
       </div>
 
@@ -163,7 +163,7 @@ export default function AskClimate() {
           <input
             className="form-input"
             type="text"
-            placeholder="Ask Leo about your footprint..."
+            placeholder="Ask Leafie about your footprint..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}

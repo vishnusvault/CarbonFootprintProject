@@ -1,5 +1,5 @@
 """
-CarbonLens — API Integration Tests
+CarbonFactors — API Integration Tests
 Tests all FastAPI endpoints end-to-end using httpx AsyncClient.
 Run with: pytest tests/ -v --asyncio-mode=auto
 """

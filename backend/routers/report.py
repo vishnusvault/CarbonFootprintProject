@@ -1,5 +1,5 @@
 """
-CarbonLens — Weekly Report Router
+CarbonFactors — Weekly Report Router
 
 Endpoints:
   POST /api/v1/report/weekly — Generate a structured weekly carbon digest.
