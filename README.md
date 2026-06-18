@@ -1,8 +1,22 @@
 # 🌱 CarbonFactors
 
-> **AI-powered personal carbon footprint tracker** — log your daily activities, get real-time CO₂e calculations, and receive Gemini-powered suggestions to reduce your environmental impact.
+> **AI-powered personal carbon footprint tracker** — log your daily emissions, get actionable AI suggestions, and watch your habits change over time.
 
-**Live App:** [https://CarbonFactors-814809066973.asia-south1.run.app](https://CarbonFactors-814809066973.asia-south1.run.app)
+**🚀 Live App:** [https://carbonfactors-814809066973.asia-south1.run.app](https://carbonfactors-814809066973.asia-south1.run.app)
+
+Built for **Promptwars Hackathon, June 2026** · Powered by Google Gemini 2.5 Flash · React + FastAPI · Deployed on Google Cloud Run
+
+> ⚠️ **Prototype Notice:** This is a hackathon prototype, not a production system. The core features are live and working, but options for food and energy logging are currently limited in scope compared to what a fully built solution would offer. Think of it as an early glimpse, not a finished product. Be gentle with it!
+
+---
+
+## 💡 The Idea
+
+*"What gets measured gets managed."*
+
+Most people want to live more consciously but wait for a major lifestyle change to start. CarbonFactors is built on a simpler belief — awareness is the first step. You don't need to go zero-waste or buy an EV tomorrow. You just need to start seeing your habits clearly, today.
+
+CarbonFactors makes that easy: log what you did, let AI tell you what it cost the planet, and discover small swaps that actually add up.
 
 ---
 
@@ -10,7 +24,7 @@
 
 | Feature | Description |
 |---|---|
-| 📋 **Manual Activity Logger** | 5-step wizard — pick category, activity type, details, confirm, and get a CO₂e result |
+| 📋 **Manual Activity Logger** | 5-step wizard — pick category → type → details → confirm → get AI suggestion |
 | 📸 **Receipt Scanner** | Upload a photo of a receipt — Gemini Vision extracts food/purchase items and estimates their carbon cost |
 | 💬 **Natural Language Log** | Type "drove 22km to work and had biryani for lunch" — AI parses it into structured activities |
 | 💡 **Inline AI Suggestions** | After every log, Gemini suggests a lower-carbon alternative specific to what you did |
@@ -26,7 +40,7 @@
 
 ## 🏗️ Architecture
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full system diagram and component breakdown.
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full system diagram, sequence flows, and component breakdown.
 
 **Stack at a glance:**
 
@@ -41,6 +55,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full system diagram and compone
 ## 🚀 Quick Start (Local)
 
 ### Prerequisites
+
 - Node.js ≥ 18
 - Python ≥ 3.11
 - A [Google AI Studio API key](https://aistudio.google.com/apikey)
@@ -59,8 +74,8 @@ cp .env.example .env
 ```bash
 cd backend
 python -m venv .venv
-.venv\Scripts\activate        # Windows
-# source .venv/bin/activate   # macOS/Linux
+.venv\Scripts\activate      # Windows
+# source .venv/bin/activate  # macOS/Linux
 pip install -r requirements.txt
 uvicorn main:app --reload --port 8080
 ```
@@ -105,67 +120,63 @@ CarbonFootprintProject/
 │   │   ├── activities.py        # /calculate, /suggest-alternative, /parse-natural
 │   │   ├── insights.py          # /generate — weekly AI insights
 │   │   ├── rag.py               # /ask — conversational Ask Leafie endpoint
-│   │   ├── report.py            # /weekly — weekly digest report
-│   │   └── scan.py              # /receipt — Gemini Vision receipt scanner
+│   │   ├── report.py            # /weekly — weekly digest
+│   │   └── scan.py              # /receipt — multipart image upload
 │   └── services/
-│       ├── calculator.py        # Haversine + emission factor lookup
+│       ├── calculator.py        # Haversine formula + emission factor lookup
 │       ├── llm.py               # Gemini client (JSON + Vision)
-│       ├── prompts.py           # All LLM prompt templates
-│       └── rag_ingest.py        # ChromaDB ingestion at startup
+│       ├── prompts.py           # All prompt templates — centralised, no logic
+│       └── rag_ingest.py        # Reads rag/documents/, chunks, embeds, stores in ChromaDB
 ├── frontend/
 │   └── src/
-│       ├── pages/               # Dashboard, LogActivity, Insights, Trends, AskClimate …
-│       ├── components/          # TopBar, BottomNav, AILogger, BudgetRing
-│       └── lib/
-│           ├── api.ts           # All backend API calls
-│           └── localStorage.ts  # Activity + profile storage helpers
+│       ├── pages/               # Dashboard, LogActivity, Insights, Trends, AskClimate, Onboarding
+│       ├── components/          # AILogger, BudgetRing, TopBar, BottomNav
+│       └── lib/                 # localStorage helpers + typed API wrappers
 ├── rag/
-│   └── documents/               # Climate knowledge base (text files)
-├── Dockerfile
+│   └── documents/               # Climate knowledge base — ingested at build time
+├── .env.example
+├── .gitignore
 ├── cloudbuild.yaml
-└── .env.example
+└── Dockerfile
 ```
 
 ---
 
 ## 🌍 Emission Factors
 
-Activities are calculated using peer-reviewed emission factors:
-
-| Category | Examples | Source |
-|---|---|---|
-| Transport | Petrol/Diesel/EV car, flights, bus, metro, train | IPCC AR6, DEFRA 2023 |
-| Energy | India grid electricity, LPG, generator | CEA India 2023 |
-| Food | 24 items — rice, biryani, dal, chicken, fish, drinks | Poore & Nemecek 2018 |
-| Purchase | Electronics (small/large), clothing | lifecycle assessments |
-| Negative | Cycling, walking (offset vs car baseline) | DEFRA transport |
+Carbon calculations use emission factors from `backend/emission_factors.json`. These are based on commonly referenced estimates and are intended for awareness and relative comparison, not precise scientific measurement. Transport uses the Haversine formula for distance calculation between Indian and global cities.
 
 ---
 
 ## 🤖 AI Capabilities
 
-All AI features use **Gemini 2.5 Flash** with structured JSON output:
+All AI features are powered by **Google Gemini 2.5 Flash** via the `google-generativeai` Python SDK:
 
-- **Inline suggestion** — grounded in RAG context, cached 30 min per activity type
-- **AI Insights** — weekly summary, 3 ranked suggestions, climate fact with citations
-- **Ask Leafie** — RAG-grounded Q&A with full conversation history + personalised context from your own activity data
-- **Receipt Scanner** — Gemini Vision parses food/grocery images
-- **Natural Language** — "I drove 20km and had chicken for lunch" → structured activity array
-
----
-
-## 🔐 Environment Variables
-
-See [`.env.example`](./.env.example) for all variables. The only required one:
-
-```
-GOOGLE_API_KEY=your_key_here
-```
-
-In production (Cloud Run), secrets are stored in **Google Secret Manager** and injected at runtime — nothing sensitive in the codebase.
+| Feature | Model capability used |
+|---|---|
+| CO₂ suggestions | Structured JSON generation |
+| Natural language log | JSON extraction from free text |
+| Weekly insights | Long-form structured analysis |
+| Ask Leafie (RAG chat) | Retrieval-augmented generation with ChromaDB |
+| Receipt scanner | Gemini Vision (multimodal image input) |
 
 ---
 
-## 📜 License
+## 🔒 Environment Variables
 
-MIT — built for PromptWars Challenge 3.
+See `.env.example` for the full list. Key variables:
+
+```env
+GOOGLE_API_KEY=your_gemini_api_key_here
+CORS_ORIGIN=http://localhost:5173
+```
+
+In production, `GOOGLE_API_KEY` is stored in **Google Secret Manager** and injected at Cloud Run runtime — never hardcoded.
+
+---
+
+## 🙏 Acknowledgements
+
+Built with Google Gemini, FastAPI, React, ChromaDB, and deployed on Google Cloud Run.
+
+*Promptwars Hackathon · June 2026*
